@@ -2,6 +2,15 @@
 from enum import Enum
 
 
+class Category(str, Enum):
+    LOGIC = "logic"
+    SECURITY = "security"
+    ERROR_HANDLING = "error_handling"
+    CONCURRENCY = "concurrency"
+    PERFORMANCE = "performance"
+    STYLE = "style"
+
+
 class Severity(str, Enum):
     LOW = "low"
     MEDIUM = "medium"
@@ -27,7 +36,7 @@ AUTO_POST_THRESHOLDS = {
 
 # Rule-based severity floor: these categories are always treated as HIGH,
 # whatever severity the reviewer LLM assigned.
-HIGH_SEVERITY_CATEGORIES = frozenset({"security", "injection", "auth", "secrets"})
+HIGH_SEVERITY_CATEGORIES = frozenset({Category.SECURITY})
 
 # static_overlap: ruff must flag a line within +/- this many lines of the finding.
 STATIC_OVERLAP_LINE_WINDOW = 3

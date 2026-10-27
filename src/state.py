@@ -4,7 +4,7 @@ from typing import Optional, TypedDict
 
 from pydantic import BaseModel, Field
 
-from src.config import Severity
+from src.config import Category, Severity
 
 
 class Decision(str, Enum):
@@ -17,7 +17,7 @@ class Finding(BaseModel):
     id: str
     file: str
     line: int
-    category: str
+    category: Category
     severity: Severity
     message: str
     expected_failure: Optional[str] = None  # e.g. "AssertionError"; used to verify repro
@@ -47,3 +47,4 @@ class ReviewState(TypedDict):
     static_issues: list[dict]        # raw ruff output
     findings: list[Finding]
     errors: list[str]                # non-fatal node failures
+
