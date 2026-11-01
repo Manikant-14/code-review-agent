@@ -45,3 +45,18 @@ STATIC_OVERLAP_LINE_WINDOW = 3
 SANDBOX_TIMEOUT_SECONDS = 30
 
 assert abs(sum(SIGNAL_WEIGHTS.values()) - 1.0) < 1e-9, "weights must sum to 1"
+
+# --- Evaluation (docs/evaluation.md) ---
+LOCATION_MATCH_WINDOW = 3
+
+# --- LLM roles (Phase 3) ---
+# Pin exact model IDs (never "-latest" aliases: they change silently). The three roles must
+# be three different models. None = not chosen yet.
+MODELS = {"reviewer": None, "critic": None, "judge": None}
+TEMPERATURES = {"reviewer": 0.2, "critic": 0.0, "judge": 0.0}
+# Requests per minute per model id (see AI Studio > Rate Limit); DEFAULT_RPM if not listed.
+RPM_LIMITS = {}
+DEFAULT_RPM = 4
+
+_chosen = [m for m in MODELS.values() if m]
+assert len(set(_chosen)) == len(_chosen), "reviewer, critic and judge must be different models"
