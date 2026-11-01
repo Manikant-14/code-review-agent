@@ -1,0 +1,11 @@
+{
+  "project": "thefuck",
+  "bug_id": 8,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tests/rules/test_dnf_no_such_command.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "elp(help_text)\n>       assert _get_operations() == dnf_operations\nE       AssertionError: assert [b'autoremove...ro-sync', ...] == ['autoremove',...ro-sync', ...]\nE         At index 0 diff: b'autoremove' != 'autoremove'\nE         Use -v to get the full diff\n\ntests/rules/test_dnf_no_such_command.py:179: AssertionError\n=========================== 1 failed in 0.39 seconds ===========================\n"
+}

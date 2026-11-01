@@ -1,0 +1,11 @@
+{
+  "project": "tornado",
+  "bug_id": 4,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tornado/test/web_test.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": ".txt\", headers={\"Range\": \"bytes=10-3\"}\n  File \"/buggy/tornado/test/web_test.py\", line 1154, in get_and_head\n    % (h, head_response.headers.get(h), get_response.headers.get(h)),\nAssertionError: 'bytes 10-3/26' != None : Content-Range differs between GET (bytes 10-3/26) and HEAD (None)\n\n----------------------------------------------------------------------\nRan 1 test in 0.046s\n\nFAILED (failures=1)\n"
+}

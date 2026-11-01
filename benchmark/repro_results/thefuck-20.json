@@ -1,0 +1,11 @@
+{
+  "project": "thefuck",
+  "bug_id": 20,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tests/rules/test_dirty_unzip.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "get_new_command(Command(script=script)) == fixed\nE       assert \"unzip 'foo bar.zip' -d 'foo\" == \"unzip 'foo ba...' -d 'foo bar'\"\nE         - unzip 'foo bar.zip' -d 'foo\nE         + unzip 'foo bar.zip' -d 'foo bar'\nE         ?                            +++++\n\n/buggy/tests/rules/test_dirty_unzip.py:50: AssertionError\n====================== 2 failed, 2 passed in 0.42 seconds ======================\n"
+}

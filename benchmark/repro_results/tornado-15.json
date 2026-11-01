@@ -1,0 +1,11 @@
+{
+  "project": "tornado",
+  "bug_id": 15,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tornado/test/web_test.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "ado/test/web_test.py\", line 1186, in test_path_traversal_protection\n    response = self.get_and_head('/static/../static_foo.txt')\n  File \"/buggy/tornado/testing.py\", line 613, in __exit__\n    raise Exception(\"did not get expected log message\")\nException: did not get expected log message\n\n----------------------------------------------------------------------\nRan 1 test in 0.027s\n\nFAILED (errors=1)\n"
+}

@@ -1,0 +1,11 @@
+{
+  "project": "thefuck",
+  "bug_id": 24,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tests/test_types.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "tedCommand(script='ls', side_effect=None, priority=200)\nE         CorrectedCommand(script='ls', side_effect=None, priority=100)\nE         Extra items in the right set:\nE         CorrectedCommand(script='ls', side_effect=None, priority=1000)\nE         Use -v to get the full diff\n\ntests/test_types.py:58: AssertionError\n=========================== 1 failed in 0.18 seconds ===========================\n"
+}

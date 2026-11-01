@@ -1,0 +1,11 @@
+{
+  "project": "httpie",
+  "bug_id": 2,
+  "split": "dev",
+  "python_version": "3.7.3",
+  "test_file": "tests/test_redirects.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": " since Python 3.3,and in 3.9 it will stop working\n    from collections import namedtuple, Iterable\n\n-- Docs: https://docs.pytest.org/en/latest/warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_redirects.py::TestRedirects::test_max_redirects - assert 0 ...\n========================= 1 failed, 1 warning in 0.89s =========================\n"
+}

@@ -1,0 +1,11 @@
+{
+  "project": "thefuck",
+  "bug_id": 6,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tests/rules/test_git_branch_exists.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "ch named 'let's-push-this' already exists.)\n\n    @git_support\n    @eager\n    def get_new_command(command):\n        branch_name = re.findall(\n>           r\"fatal: A branch named '([^']*)' already exists.\", command.output)[0]\nE       IndexError: list index out of range\n\nthefuck/rules/git_branch_exists.py:17: IndexError\n====================== 1 failed, 2 passed in 0.63 seconds ======================\n"
+}

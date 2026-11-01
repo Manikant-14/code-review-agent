@@ -1,0 +1,11 @@
+{
+  "project": "thefuck",
+  "bug_id": 23,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tests/test_utils.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "th = os.path.join(tempfile.gettempdir(), '.thefuck-cache')\n        key = '{}.{}'.format(fn.__module__, repr(fn).split('at')[0])\n    \n        etag = '.'.join(_get_mtime(name) for name in depends_on)\n    \n>       with shelve.open(cache_path) as db:\nE       AttributeError: __enter__\n\nthefuck/utils.py:183: AttributeError\n=========================== 1 failed in 0.24 seconds ===========================\n"
+}

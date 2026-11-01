@@ -1,0 +1,11 @@
+{
+  "project": "httpie",
+  "bug_id": 1,
+  "split": "dev",
+  "python_version": "3.7.3",
+  "test_file": "tests/test_downloads.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "e AttributeError(\n>               \"%s does not have the attribute %r\" % (target, name)\n            )\nE           AttributeError: <module 'httpie.downloads' from '/buggy/httpie/downloads.py'> does not have the attribute 'get_filename_max_length'\n\n/usr/local/lib/python3.7/site-packages/mock/mock.py:1411: AttributeError\n========================== 11 failed in 1.46 seconds ===========================\n"
+}

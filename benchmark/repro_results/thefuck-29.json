@@ -1,0 +1,11 @@
+{
+  "project": "thefuck",
+  "bug_id": 29,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tests/test_types.py;tests/test_utils.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "gs(old)) == new\nE       AssertionError: assert {'key': 'new-...set': 'unset'} == {'key': 'val',...set': 'unset'}\nE         Omitting 1 identical items, use -vv to show\nE         Differing items:\nE         {'key': 'new-val'} != {'key': 'val'}\nE         Use -v to get the full diff\n\ntests/test_utils.py:16: AssertionError\n====================== 2 failed, 1 passed in 0.27 seconds ======================\n"
+}

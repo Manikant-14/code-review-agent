@@ -1,0 +1,11 @@
+{
+  "project": "tornado",
+  "bug_id": 3,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tornado/test/httpclient_test.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "UT:\nException ignored in: <function HTTPClient.__del__ at 0x71fc53b7d710>\nTraceback (most recent call last):\n  File \"/buggy/tornado/httpclient.py\", line 109, in __del__\n  File \"/buggy/tornado/httpclient.py\", line 114, in close\n  File \"/buggy/tornado/simple_httpclient.py\", line 160, in close\n  File \"/buggy/tornado/httpclient.py\", line 237, in close\nRuntimeError: inconsistent AsyncHTTPClient cache\n\n"
+}

@@ -1,0 +1,11 @@
+{
+  "project": "thefuck",
+  "bug_id": 4,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tests/shells/test_fish.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": " stdout=PIPE, stderr=DEVNULL)\n        alias_out = proc.stdout.read().decode('utf-8').strip().split('\\n')\n        for alias in alias_out:\n>           name, value = alias.replace('alias ', '', 1).split(' ', 1)\nE           ValueError: not enough values to unpack (expected 2, got 1)\n\nthefuck/shells/fish.py:25: ValueError\n=========================== 1 failed in 0.36 seconds ===========================\n"
+}

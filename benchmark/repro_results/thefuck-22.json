@@ -1,0 +1,11 @@
+{
+  "project": "thefuck",
+  "bug_id": 22,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tests/test_types.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "enerator, removes duplicates and sorts commands.\"\"\"\n        commands = self._remove_duplicates(self._commands)\n>       self._cached = [self._cached[0]] + sorted(\n            commands, key=lambda corrected_command: corrected_command.priority)\nE       IndexError: list index out of range\n\nthefuck/types.py:85: IndexError\n=========================== 1 failed in 0.29 seconds ===========================\n"
+}

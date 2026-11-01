@@ -1,0 +1,11 @@
+{
+  "project": "tornado",
+  "bug_id": 7,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tornado/test/ioloop_test.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "._exc_info)\n  File \"<string>\", line 4, in raise_exc_info\n  File \"/buggy/tornado/gen.py\", line 303, in wrapper\n    yielded = next(result)\n  File \"<string>\", line 6, in _wrap_awaitable\n  File \"<string>\", line 4, in async_wrapper\nTypeError: object Future can't be used in 'await' expression\n\n----------------------------------------------------------------------\nRan 1 test in 0.023s\n\nFAILED (errors=1)\n"
+}

@@ -1,0 +1,11 @@
+{
+  "project": "thefuck",
+  "bug_id": 13,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tests/rules/test_git_branch_exists.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "heckout bar']\nE         At index 1 diff: 'git branch -D bar && git branch bar' != 'git branch -d bar && git checkout -b bar'\nE         Right contains more items, first extra item: 'git branch -D bar && git checkout -b bar'\nE         Use -v to get the full diff\n\ntests/rules/test_git_branch_exists.py:34: AssertionError\n=========================== 2 failed in 0.33 seconds ===========================\n"
+}

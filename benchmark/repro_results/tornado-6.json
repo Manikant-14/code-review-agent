@@ -1,0 +1,11 @@
+{
+  "project": "tornado",
+  "bug_id": 6,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tornado/test/asyncio_test.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": " (tornado.test.asyncio_test.LeakTest)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/buggy/tornado/test/asyncio_test.py\", line 160, in test_asyncio_close_leak\n    self.assertEqual(new_count, 1)\nAssertionError: 10 != 1\n\n----------------------------------------------------------------------\nRan 1 test in 0.005s\n\nFAILED (failures=1)\n"
+}

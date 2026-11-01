@@ -1,0 +1,11 @@
+{
+  "project": "thefuck",
+  "bug_id": 18,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tests/rules/test_sudo.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "nied'))\nE       AssertionError: assert not True\nE        +  where True = match(Command(script=sudo ls, stdout=, stderr=Permission denied))\nE        +    where Command(script=sudo ls, stdout=, stderr=Permission denied) = Command(script='sudo ls', stderr='Permission denied')\n\ntests/rules/test_sudo.py:22: AssertionError\n=========================== 1 failed in 0.38 seconds ===========================\n"
+}

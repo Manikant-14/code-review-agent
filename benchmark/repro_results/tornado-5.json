@@ -1,0 +1,11 @@
+{
+  "project": "tornado",
+  "bug_id": 5,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tornado/test/ioloop_test.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "38, in test_clock_backwards\n    [1010, 1020, 1030, 1040, 1050])\nAssertionError: Lists differ: [1010.0, 1010.0, 1010.0, 1010.0, 1010.0] != [1010, 1020, 1030, 1040, 1050]\n\nFirst differing element 1:\n1010.0\n1020\n\n- [1010.0, 1010.0, 1010.0, 1010.0, 1010.0]\n+ [1010, 1020, 1030, 1040, 1050]\n\n----------------------------------------------------------------------\nRan 1 test in 0.005s\n\nFAILED (failures=1)\n"
+}

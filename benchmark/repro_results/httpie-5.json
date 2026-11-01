@@ -1,0 +1,11 @@
+{
+  "project": "httpie",
+  "bug_id": 5,
+  "split": "dev",
+  "python_version": "3.7.3",
+  "test_file": "tests/tests.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "= {'bob:=': 'foo'}\nE       - {'bob:': '=foo'}\nE       ?           -\nE       \nE       + {'bob:=': 'foo'}\nE       ?       +\n\ntests/tests.py:84: AssertionError\n=========================== short test summary info ============================\nFAILED tests/tests.py::TestItemParsing::test_escape_longsep - AssertionError:...\n============================== 1 failed in 0.20s ===============================\n"
+}

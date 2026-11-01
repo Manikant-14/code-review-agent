@@ -1,0 +1,11 @@
+{
+  "project": "thefuck",
+  "bug_id": 30,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tests/rules/test_fix_file.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "_fix_file.py:181: AssertionError\n=============================== warnings summary ===============================\nthefuck/rules/fix_file.py:23\n  /buggy/thefuck/rules/fix_file.py:23: DeprecationWarning: invalid escape sequence \\(\n    '^{file} \\(line {line}\\):',\n\n-- Docs: https://docs.pytest.org/en/latest/warnings.html\n==================== 20 failed, 1 warnings in 1.17 seconds =====================\n"
+}

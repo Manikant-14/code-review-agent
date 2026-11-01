@@ -1,0 +1,11 @@
+{
+  "project": "tornado",
+  "bug_id": 9,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tornado/test/httputil_test.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "ost recent call last):\n  File \"/buggy/tornado/test/httputil_test.py\", line 72, in test_url_concat_none_params\n    None,\n  File \"/buggy/tornado/httputil.py\", line 616, in url_concat\n    raise TypeError(err)\nTypeError: 'args' parameter should be dict, list or tuple. Not <class 'NoneType'>\n\n----------------------------------------------------------------------\nRan 1 test in 0.008s\n\nFAILED (errors=1)\n"
+}

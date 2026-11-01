@@ -1,0 +1,11 @@
+{
+  "project": "thefuck",
+  "bug_id": 2,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tests/test_utils.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "dir().__iter__(), call().iterdir().__len__()] instead\n\n/usr/local/lib/python3.7/site-packages/mock/mock.py:971: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_utils.py::test_get_all_executables_pathsep[C:\\\\\\\\foo;C:\\\\\\\\bar;C:\\\\\\\\baz;C:\\\\\\\\foo\\\\\\\\bar-;]\n========================= 1 failed, 1 passed in 0.44s ==========================\n"
+}

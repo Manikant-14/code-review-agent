@@ -1,0 +1,11 @@
+{
+  "project": "thefuck",
+  "bug_id": 11,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tests/rules/test_git_push.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "r\"\nE       AssertionError: assert 'git push --s...ter -u origin' == 'git push --se...origin master'\nE         - git push --set-upstream origin master -u origin\nE         ?                                      ----------\nE         + git push --set-upstream origin master\n\ntests/rules/test_git_push.py:26: AssertionError\n=========================== 1 failed in 0.42 seconds ===========================\n"
+}

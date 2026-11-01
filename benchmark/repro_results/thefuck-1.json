@@ -1,0 +1,11 @@
+{
+  "project": "thefuck",
+  "bug_id": 1,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tests/rules/test_pip_unknown_command.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": ")[0]\nE       IndexError: list index out of range\n\nthefuck/rules/pip_unknown_command.py:16: IndexError\n=========================== short test summary info ============================\nFAILED tests/rules/test_pip_unknown_command.py::test_get_new_command[pip un+install thefuck-un+install-uninstall-pip uninstall thefuck]\n========================= 1 failed, 1 passed in 0.39s ==========================\n"
+}

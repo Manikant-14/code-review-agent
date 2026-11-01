@@ -1,0 +1,11 @@
+{
+  "project": "thefuck",
+  "bug_id": 10,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tests/rules/test_man.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "mand(command, new_command):\n>       assert get_new_command(command) == new_command\nE       AssertionError: assert ['missing --h...an 2 missing'] == ['missing --help']\nE         Left contains more items, first extra item: 'man 3 missing'\nE         Use -v to get the full diff\n\ntests/rules/test_man.py:35: AssertionError\n====================== 2 failed, 6 passed in 0.43 seconds ======================\n"
+}

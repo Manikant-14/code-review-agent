@@ -1,0 +1,11 @@
+{
+  "project": "tornado",
+  "bug_id": 2,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tornado/test/httpclient_test.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": ",\n  File \"/buggy/tornado/testing.py\", line 437, in fetch\n    timeout=get_async_test_timeout(),\n  File \"/buggy/tornado/ioloop.py\", line 530, in run_sync\n    raise TimeoutError(\"Operation timed out after %s seconds\" % timeout)\ntornado.util.TimeoutError: Operation timed out after 5 seconds\n\n----------------------------------------------------------------------\nRan 1 test in 5.040s\n\nFAILED (errors=1)\n"
+}

@@ -1,0 +1,11 @@
+{
+  "project": "tornado",
+  "bug_id": 12,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tornado/test/auth_test.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "    self.__rethrow()\n  File \"/buggy/tornado/testing.py\", line 261, in __rethrow\n    raise_exc_info(failure)\n  File \"<string>\", line 3, in raise_exc_info\n  File \"/buggy/tornado/testing.py\", line 309, in timeout_func\n    timeout)\nAssertionError: Async operation timed out after 5 seconds\n\n----------------------------------------------------------------------\nRan 1 test in 5.030s\n\nFAILED (failures=1)\n"
+}

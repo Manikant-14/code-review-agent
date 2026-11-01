@@ -1,0 +1,11 @@
+{
+  "project": "thefuck",
+  "bug_id": 31,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tests/rules/test_git_diff_staged.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": " assert get_new_command(command, None) == new_command\nE       AssertionError: assert 'git diff foo --staged' == 'git diff --staged foo'\nE         - git diff foo --staged\nE         ?         ----\nE         + git diff --staged foo\nE         ?                  ++++\n\ntests/rules/test_git_diff_staged.py:26: AssertionError\n====================== 1 failed, 1 passed in 0.40 seconds ======================\n"
+}

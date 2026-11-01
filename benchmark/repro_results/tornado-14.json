@@ -1,0 +1,11 @@
+{
+  "project": "tornado",
+  "bug_id": 14,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tornado/test/ioloop_test.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "t.epoll(), **kwargs)\n  File \"/buggy/tornado/ioloop.py\", line 664, in initialize\n    super(PollIOLoop, self).initialize(**kwargs)\n  File \"/buggy/tornado/ioloop.py\", line 253, in initialize\n    raise RuntimeError(\"current IOLoop already exists\")\nRuntimeError: current IOLoop already exists\n\n----------------------------------------------------------------------\nRan 1 test in 0.022s\n\nFAILED (errors=1)\n"
+}

@@ -1,0 +1,11 @@
+{
+  "project": "httpie",
+  "bug_id": 4,
+  "split": "dev",
+  "python_version": "3.7.3",
+  "test_file": "tests/test_regressions.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "ecated since Python 3.3,and in 3.9 it will stop working\n    if isinstance(hook, collections.Callable):\n\n-- Docs: https://docs.pytest.org/en/latest/warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_regressions.py::test_Host_header_overwrite - assert 2 == 1\n========================= 1 failed, 1 warning in 1.05s =========================\n"
+}

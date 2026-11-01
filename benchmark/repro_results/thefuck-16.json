@@ -1,0 +1,11 @@
+{
+  "project": "thefuck",
+  "bug_id": 16,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tests/shells/test_bash.py;tests/shells/test_zsh.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "as('fuck')\n>       assert \"alias fuck='TF_CMD=$(TF_ALIAS\" in alias\nE       assert \"alias fuck='TF_CMD=$(TF_ALIAS\" in \"alias fuck='TF_ALIAS=fuck PYTHONIOENCODING=utf-8 TF_SHELL_ALIASES=$(alias) TF_CMD=$(thefuck $(fc -ln -1 | tail -n 1)) && eval $TF_CMD && print -s $TF_CMD'\"\n\ntests/shells/test_zsh.py:50: AssertionError\n=========================== 1 failed in 0.27 seconds ===========================\n"
+}

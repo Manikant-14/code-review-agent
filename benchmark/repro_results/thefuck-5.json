@@ -1,0 +1,11 @@
+{
+  "project": "thefuck",
+  "bug_id": 5,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tests/rules/test_git_push.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": " Command('git push origin', 'Total 0 (delta 0), reused 0 (delta 0)\\nremote:\\nremote: Create pull request for feature/set-upstream:\\nremote:   http...-> feature/set-upstream\\nBranch feature/set-upstream set up to track remote branch feature/set-upstream from origin.\\n')\n\ntests/rules/test_git_push.py:39: AssertionError\n=========================== 1 failed in 0.48 seconds ===========================\n"
+}

@@ -1,0 +1,11 @@
+{
+  "project": "tornado",
+  "bug_id": 16,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tornado/test/gen_test.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "en.WaitIterator(gen.sleep(0)).next())\n  File \"/buggy/tornado/gen.py\", line 875, in run\n    value = future.result()\n  File \"/buggy/tornado/concurrent.py\", line 211, in result\n    raise_exc_info(self._exc_info)\n  File \"<string>\", line 3, in raise_exc_info\ntornado.gen.TimeoutError: Timeout\n\n----------------------------------------------------------------------\nRan 1 test in 0.137s\n\nFAILED (errors=1)\n"
+}

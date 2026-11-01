@@ -1,0 +1,11 @@
+{
+  "project": "thefuck",
+  "bug_id": 3,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tests/shells/test_fish.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "return_value.stdout.read.side_effect = [b'fish, version 3.5.9\\n']\n>       assert shell.info() == 'Fish Shell 3.5.9'\nE       AssertionError: assert 'Fish Shell f...version 3.5.9' == 'Fish Shell 3.5.9'\nE         - Fish Shell fish, version 3.5.9\nE         + Fish Shell 3.5.9\n\ntests/shells/test_fish.py:118: AssertionError\n=========================== 1 failed in 0.31 seconds ===========================\n"
+}

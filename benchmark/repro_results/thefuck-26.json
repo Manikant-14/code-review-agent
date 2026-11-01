@@ -1,0 +1,11 @@
+{
+  "project": "thefuck",
+  "bug_id": 26,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tests/rules/test_vagrant_up.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "ant rdp devbox', 'vagrant up && vagrant rdp devbox']\nE        +  where 'vagrant up devbox && vagrant rdp devbox' = get_new_command(Command(script='vagrant rdp devbox', stdout='', stderr='VM must be created before running this command. Run `vagrant up` first.'), None)\n\ntests/rules/test_vagrant_up.py:33: AssertionError\n=========================== 4 failed in 0.47 seconds ===========================\n"
+}

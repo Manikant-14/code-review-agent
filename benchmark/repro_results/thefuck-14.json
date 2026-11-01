@@ -1,0 +1,11 @@
+{
+  "project": "thefuck",
+  "bug_id": 14,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tests/shells/test_fish.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "._get_overridden_aliases() == {'cd', 'cut', 'git', 'grep',\n                                                   'ls', 'man', 'open', 'sed'}\nE       AssertionError: assert ['cut', 'git', 'sed'] == {'cd', 'cut', 'git..., 'ls', 'man', ...}\nE         Use -v to get the full diff\n\ntests/shells/test_fish.py:31: AssertionError\n=========================== 4 failed in 0.43 seconds ===========================\n"
+}

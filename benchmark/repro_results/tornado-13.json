@@ -1,0 +1,11 @@
+{
+  "project": "tornado",
+  "bug_id": 13,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tornado/test/http1connection_test.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "ue)\n  File \"/buggy/tornado/http1connection.py\", line 182, in _read_message\n    start_line, headers)\n  File \"/buggy/tornado/http1connection.py\", line 484, in _can_keep_alive\n    or start_line.method in (\"HEAD\", \"GET\")):\nAttributeError: 'ResponseStartLine' object has no attribute 'method'\n\n----------------------------------------------------------------------\nRan 1 test in 0.031s\n\nFAILED (errors=1)\n"
+}

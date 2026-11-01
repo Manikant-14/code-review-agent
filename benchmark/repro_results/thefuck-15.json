@@ -1,0 +1,11 @@
+{
+  "project": "thefuck",
+  "bug_id": 15,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tests/rules/test_git_add.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": ") known to git.))\nE        +    where Command(script=git commit unknown, stdout=, stderr=error: pathspec 'unknown' did not match any file(s) known to git.) = Command(script='git commit unknown', stderr=\"error: pathspec 'unknown' did not match any file(s) known to git.\")\n\ntests/rules/test_git_add.py:16: AssertionError\n=========================== 2 failed in 0.45 seconds ===========================\n"
+}

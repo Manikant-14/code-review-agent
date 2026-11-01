@@ -1,0 +1,11 @@
+{
+  "project": "tornado",
+  "bug_id": 10,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tornado/test/websocket_test.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "self.gen.send(value)\n  File \"/usr/local/lib/python3.7/types.py\", line 208, in send\n    return self.__wrapped.send(val)\n  File \"/buggy/tornado/test/websocket_test.py\", line 241, in test_render_message\n    self.assertEqual(response, '<b>hello</b>')\nAssertionError: None != '<b>hello</b>'\n\n----------------------------------------------------------------------\nRan 1 test in 0.040s\n\nFAILED (failures=1)\n"
+}

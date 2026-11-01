@@ -1,0 +1,11 @@
+{
+  "project": "thefuck",
+  "bug_id": 9,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tests/rules/test_git_push.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "ipt_parts.index('-u')\n        except ValueError:\n            pass\n        if upstream_option_index is not -1:\n            command.script_parts.pop(upstream_option_index)\n>           command.script_parts.pop(upstream_option_index)\nE           IndexError: pop index out of range\n\nthefuck/rules/git_push.py:27: IndexError\n=========================== 1 failed in 0.46 seconds ===========================\n"
+}

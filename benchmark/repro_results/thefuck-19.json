@@ -1,0 +1,11 @@
+{
+  "project": "thefuck",
+  "bug_id": 19,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tests/rules/test_git_push_force.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "et_new_command(command) == output\nE       AssertionError: assert 'git push --force nvbn master' == 'git push --fo...e nvbn master'\nE         - git push --force nvbn master\nE         + git push --force-with-lease nvbn master\nE         ?                 +++++++++++\n\ntests/rules/test_git_push_force.py:52: AssertionError\n=========================== 3 failed in 0.47 seconds ===========================\n"
+}

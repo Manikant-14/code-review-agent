@@ -1,0 +1,11 @@
+{
+  "project": "thefuck",
+  "bug_id": 21,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "test_file": "tests/rules/test_git_fix_stash.py",
+  "buggy_rc": 1,
+  "fixed_rc": 0,
+  "reproduces": true,
+  "buggy_tail": "t]\n\t\t       [-u|--include-untracked] [-a|--all] [<message>]]\n   or: git stash clear\n)\n\n    @git_support\n    def match(command):\n>       return (command.script.split()[1] == 'stash'\n                and 'usage:' in command.stderr)\nE       IndexError: list index out of range\n\nthefuck/rules/git_fix_stash.py:8: IndexError\n=========================== 1 failed in 0.44 seconds ===========================\n"
+}
