@@ -1,0 +1,2 @@
+benchmark/cases/** text eol=lf
+*.diff text eol=lf
