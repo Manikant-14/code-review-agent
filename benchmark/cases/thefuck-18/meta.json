@@ -1,0 +1,32 @@
+{
+  "case_id": "thefuck-18",
+  "project": "thefuck",
+  "bug_id": 18,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "github_url": "https://github.com/nvbn/thefuck",
+  "buggy_commit": "b65a9a0a4fd9bef394b45a1d367d29aa1e1c403e",
+  "fixed_commit": "c3b1ba763708b8faaaf55717c436c4cd4c57a7ea",
+  "files": [
+    "thefuck/rules/sudo.py"
+  ],
+  "bug_locations": [
+    {
+      "file": "thefuck/rules/sudo.py",
+      "start": 23,
+      "end": 23,
+      "anchor_only": true
+    }
+  ],
+  "patch_stats": {
+    "files": 1,
+    "hunks": 1,
+    "changed_lines": 4
+  },
+  "matches_bugsinpy_patch": true,
+  "category": null,
+  "ground_truth_test": {
+    "file": "tests/rules/test_sudo.py",
+    "never_show_to_agent": true
+  }
+}

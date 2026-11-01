@@ -1,0 +1,32 @@
+{
+  "case_id": "tornado-3",
+  "project": "tornado",
+  "bug_id": 3,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "github_url": "https://github.com/tornadoweb/tornado",
+  "buggy_commit": "940fd87fe9145d1154c8457221f86d56ea063c65",
+  "fixed_commit": "aa622e724f80e0f7fcee369f75d69d1db13d72f2",
+  "files": [
+    "tornado/httpclient.py"
+  ],
+  "bug_locations": [
+    {
+      "file": "tornado/httpclient.py",
+      "start": 236,
+      "end": 238,
+      "anchor_only": false
+    }
+  ],
+  "patch_stats": {
+    "files": 1,
+    "hunks": 1,
+    "changed_lines": 10
+  },
+  "matches_bugsinpy_patch": true,
+  "category": null,
+  "ground_truth_test": {
+    "file": "tornado/test/httpclient_test.py",
+    "never_show_to_agent": true
+  }
+}

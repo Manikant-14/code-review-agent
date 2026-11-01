@@ -1,0 +1,20 @@
+diff --git a/thefuck/shells/fish.py b/thefuck/shells/fish.py
+index b1ef2d7..bc2b2ec 100644
+--- a/thefuck/shells/fish.py
++++ b/thefuck/shells/fish.py
+@@ -7,10 +7,11 @@ from .generic import Generic
+ 
+ class Fish(Generic):
+     def _get_overridden_aliases(self):
+-        default = {'cd', 'grep', 'ls', 'man', 'open'}
+-        for alias in os.environ.get('TF_OVERRIDDEN_ALIASES', '').split(','):
+-            default.add(alias.strip())
+-        return default
++        overridden_aliases = os.environ.get('TF_OVERRIDDEN_ALIASES', '').strip()
++        if overridden_aliases:
++            return [alias.strip() for alias in overridden_aliases.split(',')]
++        else:
++            return ['cd', 'grep', 'ls', 'man', 'open']
+ 
+     def app_alias(self, fuck):
+         # It is VERY important to have the variables declared WITHIN the alias

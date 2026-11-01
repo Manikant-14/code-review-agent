@@ -1,0 +1,44 @@
+{
+  "case_id": "thefuck-28",
+  "project": "thefuck",
+  "bug_id": 28,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "github_url": "https://github.com/nvbn/thefuck",
+  "buggy_commit": "88831c424f569e6a55fc98883d3eeecc7d425b18",
+  "fixed_commit": "9b30ae0424607a4e268bd26eaee8ccb91a5588f9",
+  "files": [
+    "thefuck/rules/fix_file.py"
+  ],
+  "bug_locations": [
+    {
+      "file": "thefuck/rules/fix_file.py",
+      "start": 3,
+      "end": 3,
+      "anchor_only": false
+    },
+    {
+      "file": "thefuck/rules/fix_file.py",
+      "start": 23,
+      "end": 27,
+      "anchor_only": false
+    },
+    {
+      "file": "thefuck/rules/fix_file.py",
+      "start": 63,
+      "end": 66,
+      "anchor_only": false
+    }
+  ],
+  "patch_stats": {
+    "files": 1,
+    "hunks": 3,
+    "changed_lines": 27
+  },
+  "matches_bugsinpy_patch": true,
+  "category": null,
+  "ground_truth_test": {
+    "file": "tests/rules/test_fix_file.py",
+    "never_show_to_agent": true
+  }
+}

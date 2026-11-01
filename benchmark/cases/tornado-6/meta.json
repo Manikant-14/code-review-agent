@@ -1,0 +1,51 @@
+{
+  "case_id": "tornado-6",
+  "project": "tornado",
+  "bug_id": 6,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "github_url": "https://github.com/tornadoweb/tornado",
+  "buggy_commit": "fb74e4816ccfa7fc6a7abd8c8aab1f415cfc1b13",
+  "fixed_commit": "2905ee4fb3c283d40b10f609359e189c83a0dc06",
+  "files": [
+    "tornado/ioloop.py",
+    "tornado/platform/asyncio.py"
+  ],
+  "bug_locations": [
+    {
+      "file": "tornado/ioloop.py",
+      "start": 50,
+      "end": 50,
+      "anchor_only": false
+    },
+    {
+      "file": "tornado/ioloop.py",
+      "start": 188,
+      "end": 188,
+      "anchor_only": false
+    },
+    {
+      "file": "tornado/platform/asyncio.py",
+      "start": 40,
+      "end": 40,
+      "anchor_only": true
+    },
+    {
+      "file": "tornado/platform/asyncio.py",
+      "start": 51,
+      "end": 51,
+      "anchor_only": true
+    }
+  ],
+  "patch_stats": {
+    "files": 2,
+    "hunks": 4,
+    "changed_lines": 19
+  },
+  "matches_bugsinpy_patch": true,
+  "category": null,
+  "ground_truth_test": {
+    "file": "tornado/test/asyncio_test.py",
+    "never_show_to_agent": true
+  }
+}

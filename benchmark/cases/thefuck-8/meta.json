@@ -1,0 +1,38 @@
+{
+  "case_id": "thefuck-8",
+  "project": "thefuck",
+  "bug_id": 8,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "github_url": "https://github.com/nvbn/thefuck",
+  "buggy_commit": "449cb9a00693c8b4d97d5fda8d732cf0978e117e",
+  "fixed_commit": "be48f027847161f907def8987706041c65a1fd58",
+  "files": [
+    "thefuck/rules/dnf_no_such_command.py"
+  ],
+  "bug_locations": [
+    {
+      "file": "thefuck/rules/dnf_no_such_command.py",
+      "start": 18,
+      "end": 21,
+      "anchor_only": false
+    },
+    {
+      "file": "thefuck/rules/dnf_no_such_command.py",
+      "start": 29,
+      "end": 29,
+      "anchor_only": false
+    }
+  ],
+  "patch_stats": {
+    "files": 1,
+    "hunks": 2,
+    "changed_lines": 8
+  },
+  "matches_bugsinpy_patch": true,
+  "category": null,
+  "ground_truth_test": {
+    "file": "tests/rules/test_dnf_no_such_command.py",
+    "never_show_to_agent": true
+  }
+}

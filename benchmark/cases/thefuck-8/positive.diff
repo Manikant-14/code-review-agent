@@ -1,0 +1,25 @@
+diff --git a/thefuck/rules/dnf_no_such_command.py b/thefuck/rules/dnf_no_such_command.py
+index 9a70c4f..70c7939 100644
+--- a/thefuck/rules/dnf_no_such_command.py
++++ b/thefuck/rules/dnf_no_such_command.py
+@@ -15,7 +15,10 @@ def match(command):
+ 
+ 
+ def _parse_operations(help_text_lines):
+-    operation_regex = re.compile(r'^([a-z-]+) +', re.MULTILINE)
++    # The regex has to be a bytes-style regex since reading from a file
++    # like stdin returns a bytes-style object and a string-style regex
++    # wouldn't work.
++    operation_regex = re.compile(b'^([a-z-]+) +', re.MULTILINE)
+     return operation_regex.findall(help_text_lines)
+ 
+ 
+@@ -23,7 +26,7 @@ def _get_operations():
+     proc = subprocess.Popen(["dnf", '--help'],
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
+-    lines = proc.stdout.read().decode("utf-8")
++    lines = proc.stdout.read()
+ 
+     return _parse_operations(lines)
+ 

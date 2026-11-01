@@ -1,0 +1,32 @@
+{
+  "case_id": "thefuck-21",
+  "project": "thefuck",
+  "bug_id": 21,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "github_url": "https://github.com/nvbn/thefuck",
+  "buggy_commit": "71dc2666ccf62e653291d9a7a08e2c6c3320425b",
+  "fixed_commit": "213791d3c2af379ffa37a140735998736b41912e",
+  "files": [
+    "thefuck/rules/git_fix_stash.py"
+  ],
+  "bug_locations": [
+    {
+      "file": "thefuck/rules/git_fix_stash.py",
+      "start": 8,
+      "end": 9,
+      "anchor_only": false
+    }
+  ],
+  "patch_stats": {
+    "files": 1,
+    "hunks": 1,
+    "changed_lines": 9
+  },
+  "matches_bugsinpy_patch": true,
+  "category": null,
+  "ground_truth_test": {
+    "file": "tests/rules/test_git_fix_stash.py",
+    "never_show_to_agent": true
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "case_id": "tornado-14",
+  "project": "tornado",
+  "bug_id": 14,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "github_url": "https://github.com/tornadoweb/tornado",
+  "buggy_commit": "81ee310adcd905fbdf7c98d9fb6ef0c5a46026c2",
+  "fixed_commit": "1d02ed606f1c52636462633d009bdcbaac644331",
+  "files": [
+    "tornado/ioloop.py"
+  ],
+  "bug_locations": [
+    {
+      "file": "tornado/ioloop.py",
+      "start": 252,
+      "end": 252,
+      "anchor_only": false
+    }
+  ],
+  "patch_stats": {
+    "files": 1,
+    "hunks": 1,
+    "changed_lines": 3
+  },
+  "matches_bugsinpy_patch": true,
+  "category": null,
+  "ground_truth_test": {
+    "file": "tornado/test/ioloop_test.py",
+    "never_show_to_agent": true
+  }
+}

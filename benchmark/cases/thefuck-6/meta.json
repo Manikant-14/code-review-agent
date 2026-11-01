@@ -1,0 +1,32 @@
+{
+  "case_id": "thefuck-6",
+  "project": "thefuck",
+  "bug_id": 6,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "github_url": "https://github.com/nvbn/thefuck",
+  "buggy_commit": "797ca1c5647c565f62e21a8e29515c8b0fbe275f",
+  "fixed_commit": "7c858fadb3458be829d3d43666ccb46c3ed5b8a0",
+  "files": [
+    "thefuck/rules/git_branch_exists.py"
+  ],
+  "bug_locations": [
+    {
+      "file": "thefuck/rules/git_branch_exists.py",
+      "start": 10,
+      "end": 17,
+      "anchor_only": false
+    }
+  ],
+  "patch_stats": {
+    "files": 1,
+    "hunks": 1,
+    "changed_lines": 6
+  },
+  "matches_bugsinpy_patch": true,
+  "category": null,
+  "ground_truth_test": {
+    "file": "tests/rules/test_git_branch_exists.py",
+    "never_show_to_agent": true
+  }
+}

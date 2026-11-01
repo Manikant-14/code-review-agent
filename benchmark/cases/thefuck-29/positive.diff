@@ -1,0 +1,17 @@
+diff --git a/thefuck/types.py b/thefuck/types.py
+index 2e5b41a..cc48138 100644
+--- a/thefuck/types.py
++++ b/thefuck/types.py
+@@ -23,9 +23,7 @@ class Settings(dict):
+         return self.get(item)
+ 
+     def update(self, **kwargs):
+-        """
+-        Returns new settings with values from `kwargs` for unset settings.
+-        """
+-        conf = dict(kwargs)
+-        conf.update(self)
++        """Returns new settings with new values from `kwargs`."""
++        conf = dict(self)
++        conf.update(kwargs)
+         return Settings(conf)

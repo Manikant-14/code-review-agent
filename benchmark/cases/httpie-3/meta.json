@@ -1,0 +1,32 @@
+{
+  "case_id": "httpie-3",
+  "project": "httpie",
+  "bug_id": 3,
+  "split": "dev",
+  "python_version": "3.7.3",
+  "github_url": "https://github.com/jakubroztocil/httpie/",
+  "buggy_commit": "8c33e5e3d31d3cd6476c4d9bc963a4c529f883d2",
+  "fixed_commit": "589887939507ff26d36ec74bd2c045819cfa3d56",
+  "files": [
+    "httpie/sessions.py"
+  ],
+  "bug_locations": [
+    {
+      "file": "httpie/sessions.py",
+      "start": 103,
+      "end": 103,
+      "anchor_only": true
+    }
+  ],
+  "patch_stats": {
+    "files": 1,
+    "hunks": 1,
+    "changed_lines": 5
+  },
+  "matches_bugsinpy_patch": true,
+  "category": null,
+  "ground_truth_test": {
+    "file": "tests/test_sessions.py",
+    "never_show_to_agent": true
+  }
+}

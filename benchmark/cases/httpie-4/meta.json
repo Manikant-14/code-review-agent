@@ -1,0 +1,32 @@
+{
+  "case_id": "httpie-4",
+  "project": "httpie",
+  "bug_id": 4,
+  "split": "dev",
+  "python_version": "3.7.3",
+  "github_url": "https://github.com/jakubroztocil/httpie/",
+  "buggy_commit": "8c892edd4fe700a7ca5cc733dcb4817831d253e2",
+  "fixed_commit": "040d981f00c3f6830b2d0db3daf3c64c080e96e3",
+  "files": [
+    "httpie/models.py"
+  ],
+  "bug_locations": [
+    {
+      "file": "httpie/models.py",
+      "start": 105,
+      "end": 106,
+      "anchor_only": false
+    }
+  ],
+  "patch_stats": {
+    "files": 1,
+    "hunks": 1,
+    "changed_lines": 4
+  },
+  "matches_bugsinpy_patch": true,
+  "category": null,
+  "ground_truth_test": {
+    "file": "tests/test_regressions.py",
+    "never_show_to_agent": true
+  }
+}

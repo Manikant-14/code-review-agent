@@ -1,0 +1,32 @@
+{
+  "case_id": "thefuck-19",
+  "project": "thefuck",
+  "bug_id": 19,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "github_url": "https://github.com/nvbn/thefuck",
+  "buggy_commit": "959b96cf6ec8cedda05dc58efe0e0f3bd6ed2f4e",
+  "fixed_commit": "dc23d67a42dad54308a753639edd1ea0d15cb2e7",
+  "files": [
+    "thefuck/rules/git_push_force.py"
+  ],
+  "bug_locations": [
+    {
+      "file": "thefuck/rules/git_push_force.py",
+      "start": 15,
+      "end": 15,
+      "anchor_only": false
+    }
+  ],
+  "patch_stats": {
+    "files": 1,
+    "hunks": 1,
+    "changed_lines": 3
+  },
+  "matches_bugsinpy_patch": true,
+  "category": null,
+  "ground_truth_test": {
+    "file": "tests/rules/test_git_push_force.py",
+    "never_show_to_agent": true
+  }
+}

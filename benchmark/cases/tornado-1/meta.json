@@ -1,0 +1,44 @@
+{
+  "case_id": "tornado-1",
+  "project": "tornado",
+  "bug_id": 1,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "github_url": "https://github.com/tornadoweb/tornado",
+  "buggy_commit": "6a5a0bfa370b6c0d3dbbf9589a560a98202d2baa",
+  "fixed_commit": "4677c54cc18bbfbdf0f4dadf11610fab6203fd63",
+  "files": [
+    "tornado/websocket.py"
+  ],
+  "bug_locations": [
+    {
+      "file": "tornado/websocket.py",
+      "start": 561,
+      "end": 562,
+      "anchor_only": false
+    },
+    {
+      "file": "tornado/websocket.py",
+      "start": 716,
+      "end": 716,
+      "anchor_only": true
+    },
+    {
+      "file": "tornado/websocket.py",
+      "start": 1347,
+      "end": 1347,
+      "anchor_only": true
+    }
+  ],
+  "patch_stats": {
+    "files": 1,
+    "hunks": 3,
+    "changed_lines": 12
+  },
+  "matches_bugsinpy_patch": true,
+  "category": null,
+  "ground_truth_test": {
+    "file": "tornado/test/websocket_test.py",
+    "never_show_to_agent": true
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "case_id": "thefuck-14",
+  "project": "thefuck",
+  "bug_id": 14,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "github_url": "https://github.com/nvbn/thefuck",
+  "buggy_commit": "183b70c8b8885843efefd2bd4e74dc0a7d42d173",
+  "fixed_commit": "db6053b301e2b3f4363401e457b5dc4ad2e8429b",
+  "files": [
+    "thefuck/shells/fish.py"
+  ],
+  "bug_locations": [
+    {
+      "file": "thefuck/shells/fish.py",
+      "start": 10,
+      "end": 14,
+      "anchor_only": false
+    }
+  ],
+  "patch_stats": {
+    "files": 1,
+    "hunks": 1,
+    "changed_lines": 10
+  },
+  "matches_bugsinpy_patch": true,
+  "category": null,
+  "ground_truth_test": {
+    "file": "tests/shells/test_fish.py",
+    "never_show_to_agent": true
+  }
+}

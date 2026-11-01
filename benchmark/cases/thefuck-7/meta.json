@@ -1,0 +1,32 @@
+{
+  "case_id": "thefuck-7",
+  "project": "thefuck",
+  "bug_id": 7,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "github_url": "https://github.com/nvbn/thefuck",
+  "buggy_commit": "64d6835e15a22cf8803d398cbb593f748c550e8a",
+  "fixed_commit": "75d2c43997ca703150cbdb4c46ed7b2e2e71fd11",
+  "files": [
+    "thefuck/rules/php_s.py"
+  ],
+  "bug_locations": [
+    {
+      "file": "thefuck/rules/php_s.py",
+      "start": 6,
+      "end": 13,
+      "anchor_only": false
+    }
+  ],
+  "patch_stats": {
+    "files": 1,
+    "hunks": 1,
+    "changed_lines": 6
+  },
+  "matches_bugsinpy_patch": true,
+  "category": null,
+  "ground_truth_test": {
+    "file": "tests/rules/test_php_s.py",
+    "never_show_to_agent": true
+  }
+}

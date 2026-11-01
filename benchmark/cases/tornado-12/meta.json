@@ -1,0 +1,44 @@
+{
+  "case_id": "tornado-12",
+  "project": "tornado",
+  "bug_id": 12,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "github_url": "https://github.com/tornadoweb/tornado",
+  "buggy_commit": "4ee9ba94de11aaa4f932560fa2b3d8ceb8c61d2a",
+  "fixed_commit": "301f52b532c071a0d2fec1eb7c23f2714bb38567",
+  "files": [
+    "tornado/auth.py"
+  ],
+  "bug_locations": [
+    {
+      "file": "tornado/auth.py",
+      "start": 78,
+      "end": 78,
+      "anchor_only": false
+    },
+    {
+      "file": "tornado/auth.py",
+      "start": 988,
+      "end": 988,
+      "anchor_only": false
+    },
+    {
+      "file": "tornado/auth.py",
+      "start": 1065,
+      "end": 1066,
+      "anchor_only": false
+    }
+  ],
+  "patch_stats": {
+    "files": 1,
+    "hunks": 3,
+    "changed_lines": 14
+  },
+  "matches_bugsinpy_patch": true,
+  "category": null,
+  "ground_truth_test": {
+    "file": "tornado/test/auth_test.py",
+    "never_show_to_agent": true
+  }
+}

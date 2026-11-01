@@ -1,0 +1,32 @@
+{
+  "case_id": "thefuck-26",
+  "project": "thefuck",
+  "bug_id": 26,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "github_url": "https://github.com/nvbn/thefuck",
+  "buggy_commit": "7cb0388ed0845545e878b29783bbf8e901a02745",
+  "fixed_commit": "feb3eee2a08f0cba4552373d728509bc90b561ab",
+  "files": [
+    "thefuck/rules/vagrant_up.py"
+  ],
+  "bug_locations": [
+    {
+      "file": "thefuck/rules/vagrant_up.py",
+      "start": 10,
+      "end": 13,
+      "anchor_only": false
+    }
+  ],
+  "patch_stats": {
+    "files": 1,
+    "hunks": 1,
+    "changed_lines": 10
+  },
+  "matches_bugsinpy_patch": true,
+  "category": null,
+  "ground_truth_test": {
+    "file": "tests/rules/test_vagrant_up.py",
+    "never_show_to_agent": true
+  }
+}

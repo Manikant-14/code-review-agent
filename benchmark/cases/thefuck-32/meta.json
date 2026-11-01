@@ -1,0 +1,32 @@
+{
+  "case_id": "thefuck-32",
+  "project": "thefuck",
+  "bug_id": 32,
+  "split": "dev",
+  "python_version": "3.7.0",
+  "github_url": "https://github.com/nvbn/thefuck",
+  "buggy_commit": "cb33c912e5f2f4c2da6b70d708ff0437bfcd3b94",
+  "fixed_commit": "25cc98a21a3450a046caf418f08713c82a290805",
+  "files": [
+    "thefuck/rules/ls_lah.py"
+  ],
+  "bug_locations": [
+    {
+      "file": "thefuck/rules/ls_lah.py",
+      "start": 2,
+      "end": 2,
+      "anchor_only": false
+    }
+  ],
+  "patch_stats": {
+    "files": 1,
+    "hunks": 1,
+    "changed_lines": 5
+  },
+  "matches_bugsinpy_patch": true,
+  "category": null,
+  "ground_truth_test": {
+    "file": "tests/rules/test_ls_lah.py",
+    "never_show_to_agent": true
+  }
+}
