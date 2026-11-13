@@ -6,14 +6,16 @@ Cache and log live under data/ (git-ignored).
 """
 import hashlib
 import json
+import os
 import re
 import time
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Optional, Type
 
 from pydantic import BaseModel
 
-from src.config import DEFAULT_RPM, MODELS, RPM_LIMITS, TEMPERATURES
+from src.config import DEFAULT_RPM, MODELS, PROVIDERS, RPM_LIMITS, TEMPERATURES
 
 ROOT = Path(__file__).resolve().parent.parent
 CACHE_DIR = ROOT / "data" / "llm_cache"
@@ -42,7 +44,65 @@ def _is_gemma(model: str) -> bool:
     return model.lower().startswith(("gemma", "models/gemma"))
 
 
+def _split(model: str) -> tuple[str, str]:
+    """'groq:openai/gpt-oss-120b' -> ('groq', 'openai/gpt-oss-120b'). Splits on the first colon."""
+    provider, sep, name = model.partition(":")
+    if not sep or provider not in PROVIDERS:
+        raise ValueError(f"model id '{model}' must be 'provider:model' with provider in {sorted(PROVIDERS)}")
+    return provider, name
+
+
 def _client_call(model, temperature, system, prompt, schema):
+    """Route to the provider named in the model id. Every adapter returns an object with
+    .text and .usage_metadata(prompt_token_count, candidates_token_count)."""
+    provider, name = _split(model)
+    if PROVIDERS[provider]["kind"] == "gemini":
+        return _gemini_call(name, temperature, system, prompt, schema)
+    return _openai_call(provider, name, temperature, system, prompt, schema)
+
+
+_openai_clients: dict = {}
+
+
+def _get_openai_client(provider: str):
+    if provider not in _openai_clients:
+        from dotenv import load_dotenv  # lazy: tests never need these
+        from openai import OpenAI
+
+        load_dotenv()  # fills missing env vars from .env, never overrides real ones
+        cfg = PROVIDERS[provider]
+        key_env = cfg.get("key_env")
+        key = os.environ.get(key_env) if key_env else "none"
+        if not key:
+            raise RuntimeError(f"{key_env} is not set: add it to .env")
+        # max_retries=0: our own throttle/retry loop is the only retry layer, so call counts
+        # and waits stay predictable against free-tier quotas.
+        _openai_clients[provider] = OpenAI(base_url=cfg["base_url"], api_key=key,
+                                           max_retries=0, timeout=120)
+    return _openai_clients[provider]
+
+
+def _openai_call(provider, name, temperature, system, prompt, schema):
+    sys_text = system or ""
+    kwargs = {}
+    if schema is not None:
+        # json_object mode works on every OpenAI-compatible provider; the schema goes in the
+        # system text, and call_llm validates the reply with pydantic afterwards.
+        sys_text += ("\n\nReply with one JSON object matching this JSON schema, nothing else:\n"
+                     + json.dumps(schema.model_json_schema()))
+        kwargs["response_format"] = {"type": "json_object"}
+    messages = ([{"role": "system", "content": sys_text.strip()}] if sys_text.strip() else [])
+    messages.append({"role": "user", "content": prompt})
+    resp = _get_openai_client(provider).chat.completions.create(
+        model=name, messages=messages, temperature=temperature, **kwargs)
+    u = getattr(resp, "usage", None)
+    return SimpleNamespace(
+        text=resp.choices[0].message.content or "",
+        usage_metadata=SimpleNamespace(prompt_token_count=getattr(u, "prompt_tokens", None),
+                                       candidates_token_count=getattr(u, "completion_tokens", None)))
+
+
+def _gemini_call(model, temperature, system, prompt, schema):
     from google.genai import types
 
     cfg = {"temperature": temperature}
@@ -73,6 +133,8 @@ def _throttle(model: str) -> None:
 def _classify(e: Exception) -> str:
     code = getattr(e, "code", None) or getattr(e, "status_code", None)
     msg = str(e).lower().replace(" ", "")
+    if "requesttoolarge" in msg:  # prompt alone exceeds the per-minute token limit: retrying is futile
+        return "fatal"
     if code == 429:
         return "daily" if ("perday" in msg or "daily" in msg) else "retry"
     if code in (500, 502, 503, 504):

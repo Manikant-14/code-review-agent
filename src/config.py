@@ -49,6 +49,17 @@ assert abs(sum(SIGNAL_WEIGHTS.values()) - 1.0) < 1e-9, "weights must sum to 1"
 # --- Evaluation (docs/evaluation.md) ---
 LOCATION_MATCH_WINDOW = 3
 
+# --- LLM providers (Phase 3) ---
+# Model ids are "provider:model", split on the FIRST colon (so "ollama:llama3:8b" also works).
+# kind "gemini" uses the google-genai SDK; kind "openai" is any OpenAI-compatible endpoint.
+# Keys are read from the environment / .env (never committed). Adding OpenRouter, xAI or a
+# local Ollama later is one more entry here.
+PROVIDERS = {
+    "gemini": {"kind": "gemini"},
+    "groq": {"kind": "openai", "base_url": "https://api.groq.com/openai/v1",
+             "key_env": "GROQ_API_KEY"},
+}
+
 # --- LLM roles (Phase 3) ---
 # Pin exact model IDs (never "-latest" aliases: they change silently). The three roles must
 # be three different models. None = not chosen yet.
@@ -60,3 +71,4 @@ DEFAULT_RPM = 4
 
 _chosen = [m for m in MODELS.values() if m]
 assert len(set(_chosen)) == len(_chosen), "reviewer, critic and judge must be different models"
+assert all(m.partition(":")[0] in PROVIDERS for m in _chosen), "model ids must be provider:model"
