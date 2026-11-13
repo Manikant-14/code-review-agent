@@ -64,3 +64,33 @@ def test_groq_error_messages_are_classified():
     tpm = ApiErr(429, "Rate limit reached ... on tokens per minute (TPM): Limit 8000. Try again in 7s")
     big = ApiErr(413, "Request too large for model ... on tokens per minute (TPM): Limit 8000, Requested 9500")
     assert [llm._classify(e) for e in (tpd, rpd, tpm, big)] == ["daily", "daily", "retry", "fatal"]
+
+
+def test_http_client_maps_response_and_raises_status_errors(monkeypatch):
+    sent = {}
+
+    class Resp:
+        def __init__(self, status, body):
+            self.status_code, self._body, self.text = status, body, json.dumps(body)
+
+        def json(self):
+            return self._body
+
+    def post_ok(url, headers, json, timeout):
+        sent.update(url=url, headers=headers, payload=json)
+        return Resp(200, {"choices": [{"message": {"content": "hi"}}],
+                          "usage": {"prompt_tokens": 7, "completion_tokens": 2}})
+
+    monkeypatch.setattr("httpx.post", post_ok)
+    client = llm._HttpCompletions("https://example.test/v1/", "k")
+    out = client.create(model="m", messages=[])
+    assert sent["url"] == "https://example.test/v1/chat/completions"
+    assert sent["headers"]["Authorization"] == "Bearer k"
+    assert out.choices[0].message.content == "hi"
+    assert (out.usage.prompt_tokens, out.usage.completion_tokens) == (7, 2)
+
+    err_body = {"error": {"message": "Rate limit reached on tokens per day (TPD): Limit 200000"}}
+    monkeypatch.setattr("httpx.post", lambda *a, **k: Resp(429, err_body))
+    with pytest.raises(llm.ApiError) as ei:
+        client.create(model="m", messages=[])
+    assert ei.value.status_code == 429 and llm._classify(ei.value) == "daily"

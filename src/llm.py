@@ -64,10 +64,42 @@ def _client_call(model, temperature, system, prompt, schema):
 _openai_clients: dict = {}
 
 
+class ApiError(Exception):
+    """HTTP error from an OpenAI-compatible API; carries status_code so _classify can read it."""
+
+    def __init__(self, status_code, message):
+        super().__init__(message)
+        self.status_code = status_code
+
+
+class _HttpCompletions:
+    """Minimal chat-completions client over plain httpx. Used instead of the openai SDK because
+    the SDK pulls in a compiled dependency (jiter) that some Windows Application Control policies
+    block. Exposes .create(**payload) with the same response shape the SDK has."""
+
+    def __init__(self, base_url: str, key: str):
+        self.url = base_url.rstrip("/") + "/chat/completions"
+        self.headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json",
+                        "User-Agent": "code-review-agent/0.1"}
+
+    def create(self, **payload):
+        import httpx
+
+        r = httpx.post(self.url, headers=self.headers, json=payload, timeout=120)
+        if r.status_code >= 400:
+            raise ApiError(r.status_code, r.text)
+        data = r.json()
+        u = data.get("usage") or {}
+        return SimpleNamespace(
+            choices=[SimpleNamespace(message=SimpleNamespace(
+                content=data["choices"][0]["message"].get("content")))],
+            usage=SimpleNamespace(prompt_tokens=u.get("prompt_tokens"),
+                                  completion_tokens=u.get("completion_tokens")))
+
+
 def _get_openai_client(provider: str):
     if provider not in _openai_clients:
-        from dotenv import load_dotenv  # lazy: tests never need these
-        from openai import OpenAI
+        from dotenv import load_dotenv  # lazy: tests never need this
 
         load_dotenv()  # fills missing env vars from .env, never overrides real ones
         cfg = PROVIDERS[provider]
@@ -75,10 +107,10 @@ def _get_openai_client(provider: str):
         key = os.environ.get(key_env) if key_env else "none"
         if not key:
             raise RuntimeError(f"{key_env} is not set: add it to .env")
-        # max_retries=0: our own throttle/retry loop is the only retry layer, so call counts
+        # No SDK retries: our own throttle/retry loop is the only retry layer, so call counts
         # and waits stay predictable against free-tier quotas.
-        _openai_clients[provider] = OpenAI(base_url=cfg["base_url"], api_key=key,
-                                           max_retries=0, timeout=120)
+        _openai_clients[provider] = SimpleNamespace(
+            chat=SimpleNamespace(completions=_HttpCompletions(cfg["base_url"], key)))
     return _openai_clients[provider]
 
 
