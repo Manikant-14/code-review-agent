@@ -94,3 +94,12 @@ def test_http_client_maps_response_and_raises_status_errors(monkeypatch):
     with pytest.raises(llm.ApiError) as ei:
         client.create(model="m", messages=[])
     assert ei.value.status_code == 429 and llm._classify(ei.value) == "daily"
+
+
+def test_transient_network_errors_are_retried():
+    class ConnectError(Exception):
+        pass
+
+    assert llm._classify(ConnectError("getaddrinfo failed")) == "retry"
+    assert llm._classify(ConnectionResetError("connection aborted")) == "retry"
+    assert llm._classify(ValueError("bad input")) == "fatal"

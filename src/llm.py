@@ -162,6 +162,10 @@ def _throttle(model: str) -> None:
     _last_call[model] = time.time()
 
 
+_NETWORK_ERRORS = {"ConnectError", "ReadError", "WriteError", "ReadTimeout", "ConnectTimeout",
+                   "PoolTimeout", "RemoteProtocolError", "TransportError"}
+
+
 def _classify(e: Exception) -> str:
     code = getattr(e, "code", None) or getattr(e, "status_code", None)
     msg = str(e).lower().replace(" ", "")
@@ -171,6 +175,8 @@ def _classify(e: Exception) -> str:
         return "daily" if ("perday" in msg or "daily" in msg) else "retry"
     if code in (500, 502, 503, 504):
         return "retry"
+    if isinstance(e, (OSError, TimeoutError)) or type(e).__name__ in _NETWORK_ERRORS:
+        return "retry"  # transient network trouble: DNS failure, dropped connection, timeout
     return "fatal"
 
 
