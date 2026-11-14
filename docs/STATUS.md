@@ -130,3 +130,54 @@ Phase 7: book chapter, then paper; patent description (check IP-cell advice and 
   .\.venv\Scripts\Activate.ps1
   git pull
   python -m pytest -q      (23 passed; 26 after the provider tests)
+
+## UPDATE 2026-11-14 (supersedes "Not yet in the repo", the Phase 3 step 1-2 items, "LLM situation" model plans and "Resume" above)
+Repo main at 2e75bf5, 29 tests pass. Phase 3 steps 1-2 DONE.
+
+### Done
+- Provider layer committed: model ids are "provider:model" (gemini, groq). Groq is called over plain httpx
+  (src/llm.py _HttpCompletions), NOT the openai SDK: this laptop's Windows Application Control policy blocks
+  pip.exe and compiled packages (jiter). Always use "python -m pip". FAISS may be blocked later.
+  Network drops (DNS, dropped connection) are retried; "request too large" is fatal.
+- Smoke test: python -m scripts.smoke_llm groq:openai/gpt-oss-120b
+- Bake-off: python -m benchmark.bakeoff <ids> (5 cases: httpie-4 thefuck-29 tornado-10 httpie-2 thefuck-10, positive
+  and negative diff each; location-only scoring). 120b: valid 10/10, found 3/5 (really 4/5), quiet on fixes 2/5,
+  ~1.35K tokens/call. Qwen 3.8 27B: found 2/5, quiet 0/5. gpt-oss-20b: valid 6/10 (Groq JSON validation fails). Gemma 31B:
+  found 4/5, valid 9/10, 50-290 s per call, ~5-10% Google 500s.
+- Critic/judge mini-test: python -m benchmark.critic_judge_test <ids> (7 real 120b findings: 4 true, 3 false).
+  Judge: Gemma 6/6 answered correct, Qwen 4/7, Flash Lite 4/7 (they say "incorrect" almost always).
+  Critic: Qwen 3/7, Flash Lite 3/7 (chance), Gemma 5/6 but Gemma is the judge so it cannot also be the critic.
+- config.py: MODELS reviewer groq:openai/gpt-oss-120b (3 RPM), judge gemini:gemma-4-31b-it (6 RPM), critic None ON PURPOSE.
+
+### Limits and numbers
+- Groq free: 8K TPM / 200K TPD per model, reasoning tokens count (~3-4x visible output). 120b call ~1.35K tokens, so a 102-call
+  reviewer pass ~140K tokens, ~35 min at 3 RPM. The old 2.4M-token estimate assumed 5K prompts; diff-only prompts are ~600 tokens.
+- Gemma 4 31B and 26B: 30 RPM, 16K TPM, 14.4K RPD. Judge must run offline, resumable, ideally 4-8 parallel calls (step 6).
+- Gemini 3.5 and 3.1 Flash Lite: 15 RPM, 250K TPM, 500 RPD (fast, but poor as critic/judge in the test). Other Gemini Flash: 20 RPD.
+- Cache: data/llm_cache; log: data/llm_log.jsonl (role, model, cached, latency_s, prompt_tokens, output_tokens).
+
+### Findings that change the plan
+1. All four models flag fix diffs (negative cases): they treat removed lines as the intended baseline. evaluation.md counts these as
+   false positives by default. DECIDE at step 6: keep, or also report a separate "fix-flag rate". Do not tune the prompt on 5 cases.
+2. GROUND-TRUTH BUG: build_cases.py records only changed buggy lines and skips pure-insertion locations inside mixed hunks.
+   Uncovered: thefuck-10, thefuck-24, thefuck-28, httpie-5 (httpie-2's is a comment, harmless). Fix BEFORE step 6.
+3. Diff-only critic cannot verify claims and rebuts true findings (chance level). Supports the sandbox-heavy weights; ablations decide.
+   Choose the critic in Phase 4 on the pilot with the real prompt (candidates: Qwen, Gemma 26B (same family as judge: partial
+   independence), Flash Lite).
+4. n is tiny (5 cases, 7 findings): screening only, not ranking.
+
+### Next (Phase 3)
+3. Review-input builder: promote annotate_diff (benchmark/bakeoff.py) to src; add bounded context via git show from data/repos;
+   test with and without context on the same 5 cases; keep under ~5K tokens; log the deviation in evaluation.md.
+4. Reviewer node (schema file, line, category, severity, message, expected_failure, self_confidence), temperature 0.2, JSONL output.
+5. Thin skeleton then 10-bug pilot (20 runs). 6. Eval harness (first fix build_cases). 7. Baselines and calibration in evaluation.md.
+
+### Working style
+One step at a time with reasoning and a recommendation; every step as complete copy-paste PowerShell blocks (here-string Python
+patchers with exact anchors, idempotent, tested on a fresh clone first). Free only, pinned model ids, never paste .env contents.
+
+### Resume
+  cd C:\dev\code-review-agent
+  .\.venv\Scripts\Activate.ps1
+  git pull
+  python -m pytest -q      (29 passed)
