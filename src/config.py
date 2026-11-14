@@ -63,10 +63,13 @@ PROVIDERS = {
 # --- LLM roles (Phase 3) ---
 # Pin exact model IDs (never "-latest" aliases: they change silently). The three roles must
 # be three different models. None = not chosen yet.
-MODELS = {"reviewer": None, "critic": None, "judge": None}
+# Reviewer chosen from the 5-case bake-off (valid JSON 10/10, ~1.35K tokens per call).
+# Critic and judge stay None until the critic/judge mini-test.
+MODELS = {"reviewer": "groq:openai/gpt-oss-120b", "critic": None, "judge": None}
 TEMPERATURES = {"reviewer": 0.2, "critic": 0.0, "judge": 0.0}
 # Requests per minute per model id (see AI Studio > Rate Limit); DEFAULT_RPM if not listed.
-RPM_LIMITS = {}
+# Groq free tier is limited by tokens per minute (8K), not requests: 3 RPM leaves headroom.
+RPM_LIMITS = {"groq:openai/gpt-oss-120b": 3}
 DEFAULT_RPM = 4
 
 _chosen = [m for m in MODELS.values() if m]
