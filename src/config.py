@@ -77,3 +77,13 @@ DEFAULT_RPM = 4
 _chosen = [m for m in MODELS.values() if m]
 assert len(set(_chosen)) == len(_chosen), "reviewer, critic and judge must be different models"
 assert all(m.partition(":")[0] in PROVIDERS for m in _chosen), "model ids must be provider:model"
+
+
+# --- Review input (Phase 3 step 3) ---
+# Groq's free tier allows 8K tokens/min and reasoning tokens count, so the reviewer prompt is the
+# diff plus bounded context (the enclosing function), not whole files. Deviation from the
+# "full changed files" wording in docs/evaluation.md; logged there.
+CHARS_PER_TOKEN = 3.5            # conservative estimate for source code
+REVIEW_MAX_INPUT_TOKENS = 4000   # user prompt only; the system prompt adds a few hundred more
+REVIEW_MAX_FUNC_LINES = 80       # longest stretch of one enclosing function that is shown
+REVIEW_FALLBACK_RADIUS = 20      # lines either side of a hunk when no function encloses it
