@@ -181,3 +181,15 @@ patchers with exact anchors, idempotent, tested on a fresh clone first). Free on
   .\.venv\Scripts\Activate.ps1
   git pull
   python -m pytest -q      (29 passed)
+
+
+## UPDATE 2026-11-21 (Phase 3 step 3)
+Step 3a done (d82fa15, 42 tests): src/review_input.py builds the reviewer prompt (annotated diff + enclosing
+function, capped), benchmark/context_test.py compares with/without context (arm A reuses the bake-off cache).
+Result on 5 cases: context found 5/5 vs 3/5 (4/5 after the thefuck-10 ground-truth gap), 0 vs 1 extra, quiet on
+fixes 3/5 vs 2/5. Context is the default; deviation logged in docs/evaluation.md.
+Numbers: a context call is ~1.2K prompt + ~0.7K output tokens; use 2 RPM for the reviewer; a full 102-run pass is
+~195K tokens, about the whole 200K/day Groq cap, so plan it across two days (cache makes it resumable).
+Still open: fix-flagging on negative diffs (decide at step 6), build_cases ground-truth gap (fix before step 6).
+Next: step 4, reviewer node (schema file, line, category, severity, message, expected_failure, self_confidence),
+temperature 0.2, findings saved as JSONL.

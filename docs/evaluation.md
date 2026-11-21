@@ -62,3 +62,14 @@ escalation, and count once toward run-level recall.
 - Labels rely on location plus an LLM judge; agreement with hand labels is reported.
 - Negative runs may contain real latent issues the dataset does not know about.
 - Python only; one model family for reviewer and critic unless stated otherwise.
+
+
+## Deviations log
+- 2026-11-21 (Phase 3 step 3): the reviewer sees the annotated diff plus the enclosing function of each
+  hunk (at most 80 lines per function, whole prompt capped at ~4,000 estimated tokens, read with
+  `git show` at the buggy commit for positive runs and the fixed commit for negative runs), not the
+  full changed files named in "Unit of evaluation". Reason: the Groq free tier allows 8K tokens/min and
+  200K tokens/day on the reviewer model, and reasoning tokens count. Screening on 5 dev cases,
+  location-only: found 5/5 with context vs 3/5 without (4/5 after the known thefuck-10 ground-truth gap),
+  extra findings 0 vs 1, quiet on fixes 3/5 vs 2/5. n = 5, so this is a screen, not a ranking; the
+  with/without comparison should be repeated on the pilot with the judge in place.
