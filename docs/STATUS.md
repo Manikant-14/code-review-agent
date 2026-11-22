@@ -203,3 +203,42 @@ benchmark/refresh_locations.py regenerates bug_locations from negative.diff (7 c
 thefuck-11, thefuck-13, thefuck-24, thefuck-28, tornado-5); a test keeps meta.json in sync. Logged in evaluation.md.
 Next: step 6, eval harness per docs/evaluation.md (location matcher, judge only on location-matched findings, metrics,
 intervals, unit tests). Decide the fix-flag reporting there.
+
+## CURRENT STATE 2026-11-22 (read this first; supersedes older UPDATE sections where they conflict)
+Phase 3 is complete except two human tasks (see Open). 153 tests pass.
+
+How the pieces fit
+- src/review_input.py: case -> prompt (annotated diff + enclosing function, capped; context on by default).
+- src/reviewer.py: reviewer node, prompt v1, one JSONL line per run, resumable. Finding.self_confidence is a baseline feature only.
+- benchmark/labeling.py: location matcher, labeling rules, dataset builder, judge queue.
+- benchmark/judge.py: Gemma 4 31B judge, prompt j2, 4 parallel workers, resumable labels.jsonl. llm.py throttle and log are thread-safe.
+- benchmark/metrics.py, benchmark/calibration.py: metrics, Wilson and cluster-bootstrap intervals, operating curve, Brier/ECE/AUROC.
+- benchmark/evaluate.py: the report. benchmark/handlabel.py: blinded judge check (30 findings) and negative-run latent check.
+- benchmark/refresh_locations.py: regenerates bug_locations from negative.diff; a test keeps meta.json in sync.
+
+Commands (repo root, venv active)
+  python -m src.reviewer CASE... --out data\runs\X.jsonl
+  python -m benchmark.judge data\runs\X.jsonl
+  python -m benchmark.evaluate data\runs\X.jsonl --policy score --param 0.9 --curve --calibration
+  python -m benchmark.handlabel sample data\runs\X.jsonl      (then: agreement, latent)
+
+Decisions made in Phase 3 (all logged in docs/evaluation.md)
+- Reviewer input = diff + enclosing function (<= 80 lines per function, ~4000-token cap); full files dropped (Groq budget).
+- Ground truth: pure-insertion groups in mixed hunks are anchors (7 cases refreshed).
+- Judge prompt j2 (the reviewer sees the diff reversed); j2 is frozen for dev-set judging.
+- Fix-flagging: negative-run findings stay false positives by default; the fix-flag rate is reported separately; no prompt tuning.
+- Baselines (no gate, always escalate, self-confidence sweep, later critic-only) and calibration (Brier, ECE, AUROC)
+  defined before any dev run. Bootstrap intervals that collapse at 0/1 are shown with Wilson.
+
+Pilot (10 bugs, 20 runs, judge j2; plumbing only, wide intervals): 18 findings, 12 true positives; no-gate precision
+0.67 [0.44, 0.84]; fix-flag rate 4/10; detection recall 10/10 (Wilson [0.72, 1.00]); self-confidence >= 0.9 gives
+precision 0.86 [0.49, 0.97] but auto-post recall 0.60 and 61% escalation. False positives cluster at 0.85, so the
+self-confidence baseline is a real opponent.
+
+Open
+- Manikant: hand-label data/runs/handlabel (14 judged + 4 negative-run findings), then run handlabel agreement and latent.
+- The full dev pass (102 reviewer runs, ~195K tokens) needs two days of Groq budget, then ~70 judge calls (Phase 5).
+
+Next: Phase 4, one node at a time on the pilot: 1 static (ruff on the full file, changed lines only);
+2 sandbox (decide the per-project Docker image strategy first); 3 critic (different model family, binary verdict);
+4 wire gate.py into LangGraph and persist every signal for offline replay.

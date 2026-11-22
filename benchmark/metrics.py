@@ -3,6 +3,9 @@
 A metric with nothing to measure is None (printed n/a), never 0 or 1: e.g. auto-post precision when
 nothing was auto-posted. Proportions over findings get Wilson intervals; run-level metrics and the
 curve get a cluster bootstrap over CASES (the positive and negative runs of one bug stay together).
+A percentile bootstrap collapses to a point when every case succeeds (or fails), so proportions
+also carry a Wilson interval, and the curve shows Wilson wherever its bootstrap band has zero width.
+Wilson treats runs as independent: it is valid with one repeat per case; with repeats trust the bootstrap.
 """
 from __future__ import annotations
 
@@ -18,6 +21,16 @@ from src import config
 AUTO, ESC = "auto_post", "escalate"
 RUN_LEVEL = ("detection_recall", "autopost_recall", "fp_load_auto", "fp_load_escalated", "fix_flag_rate")
 CURVE_KEYS = ("auto_post_precision", "escalation_rate", "autopost_recall", "detection_recall")
+# metric -> (numerator count, denominator count) in the _metrics() dict, for Wilson intervals
+PROPORTIONS = {
+    "auto_post_precision": ("n_auto_tp", "n_auto"),
+    "escalation_rate": ("n_escalated", "n_findings"),
+    "escalation_rate_pos": ("n_esc_pos", "n_pos_findings"),
+    "escalation_rate_neg": ("n_esc_neg", "n_neg_findings"),
+    "detection_recall": ("n_tp_runs", "n_pos_runs"),
+    "autopost_recall": ("n_auto_tp_runs", "n_pos_runs"),
+    "fix_flag_rate": ("n_flag_runs", "n_neg_runs"),
+}
 
 
 # ---- intervals -------------------------------------------------------------------------------
@@ -47,10 +60,25 @@ def _ci(values: list[Optional[float]]) -> Optional[tuple[float, float, int]]:
     return percentile(vals, 0.025), percentile(vals, 0.975), len(vals)
 
 
+def degenerate(ci) -> bool:
+    """A bootstrap interval of zero width: not certainty, just a collapsed percentile interval."""
+    return ci is not None and ci[1] - ci[0] < 1e-9
+
+
+def wilson_for(m: dict, key: str) -> Optional[tuple[float, float]]:
+    num, den = PROPORTIONS[key]
+    return wilson(m[num], m[den])
+
+
 # ---- policies: which findings are auto-posted ------------------------------------------------
 def all_auto(f: Labeled, _param=None) -> bool:
     """No gate: everything is posted."""
     return True
+
+
+def always_escalate(f: Labeled, _param=None) -> bool:
+    """Baseline: a human reviews everything, nothing is auto-posted."""
+    return False
 
 
 def score_at_least(f: Labeled, t: float) -> bool:
@@ -70,7 +98,8 @@ def severity_scaled(f: Labeled, s: float) -> bool:
     return f.score >= min(1.0, config.AUTO_POST_THRESHOLDS[sev] * s)
 
 
-POLICIES = {"all_auto": all_auto, "score": score_at_least, "severity_scaled": severity_scaled}
+POLICIES = {"all_auto": all_auto, "always_escalate": always_escalate, "score": score_at_least,
+            "severity_scaled": severity_scaled}
 
 
 def with_decisions(findings: list[Labeled], auto_fn: Callable, param=None) -> list[Labeled]:
@@ -101,10 +130,12 @@ def _metrics(runs: list[Run], findings: list[Labeled], auto: list[bool]) -> dict
     tp_runs = {f.run_id for f in findings if f.is_tp} & pos_runs
     auto_tp_runs = {f.run_id for f, a in zip(findings, auto) if a and f.is_tp} & pos_runs
     neg_auto = sum(1 for f, a in zip(findings, auto) if a and f.kind == "negative")
+    flag_runs = {f.run_id for f in findings if f.kind == "negative"}
     return {
         "n_pos_runs": len(pos_runs), "n_neg_runs": len(neg_runs), "n_findings": n,
         "n_auto": k_auto, "n_escalated": n - k_auto, "n_auto_tp": k_auto_tp,
         "n_pos_findings": pos_n, "n_neg_findings": neg_n,
+        "n_tp_runs": len(tp_runs), "n_auto_tp_runs": len(auto_tp_runs), "n_flag_runs": len(flag_runs),
         "n_esc_pos": k_esc_pos, "n_esc_neg": k_esc_neg,
         "auto_post_precision": _ratio(k_auto_tp, k_auto),
         "escalation_rate": _ratio(n - k_auto, n),
@@ -114,7 +145,7 @@ def _metrics(runs: list[Run], findings: list[Labeled], auto: list[bool]) -> dict
         "autopost_recall": _ratio(len(auto_tp_runs), len(pos_runs)),
         "fp_load_auto": _ratio(neg_auto, len(neg_runs)),
         "fp_load_escalated": _ratio(k_esc_neg, len(neg_runs)),
-        "fix_flag_rate": _ratio(len({f.run_id for f in findings if f.kind == "negative"}), len(neg_runs)),
+        "fix_flag_rate": _ratio(len(flag_runs), len(neg_runs)),
     }
 
 
@@ -180,7 +211,8 @@ def summarize(runs: list[Run], findings: list[Labeled], B: int = 2000, seed: int
     }
     for k in RUN_LEVEL:
         out[k] = {"value": m[k], "method": "bootstrap", "ci": boot[k][:2] if boot[k] else None,
-                  "n_valid": boot[k][2] if boot[k] else 0}
+                  "n_valid": boot[k][2] if boot[k] else 0,
+                  "wilson": wilson_for(m, k) if k in PROPORTIONS else None}
     out["counts"] = {k: m[k] for k in ("n_pos_runs", "n_neg_runs", "n_findings", "n_auto", "n_escalated")}
     return out
 
@@ -209,6 +241,7 @@ def operating_curve(runs: list[Run], findings: list[Labeled], auto_fn: Callable,
         for k in CURVE_KEYS:
             row[k] = m[k]
             row[k + "_ci"] = _ci(r[k])
+            row[k + "_wilson"] = wilson_for(m, k)
         rows.append(row)
     return rows
 

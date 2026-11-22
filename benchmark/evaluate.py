@@ -5,13 +5,15 @@ judge verdict), and prints the metrics for a decision policy. Refuses to report 
 location-matched finding is still waiting for the judge, so a half-labeled run cannot produce
 numbers. Dev and test are never pooled: --split picks one.
 
-Policies: all_auto (no gate), score (auto-post when self-confidence >= --param), severity_scaled
-(the gate's per-severity thresholds times --param), decisions (use each finding's own decision,
-for gate output). The no-gate block is always printed first.
+Policies: all_auto (no gate), always_escalate (a human reviews everything), score (auto-post when
+the score >= --param; self-confidence by default), severity_scaled (the gate's per-severity
+thresholds times --param), decisions (use each finding's own decision, for gate output). The no-gate
+block is always printed first. --calibration adds Brier, ECE, AUROC and a reliability table for the
+score named by --score-key.
 
 Usage (repo root, venv active):
   python -m benchmark.evaluate data/runs/pilot.jsonl
-  python -m benchmark.evaluate data/runs/pilot.jsonl --policy score --param 0.85 --curve
+  python -m benchmark.evaluate data/runs/pilot.jsonl --policy score --param 0.85 --curve --calibration
 """
 from __future__ import annotations
 
@@ -21,7 +23,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Optional
 
-from benchmark import judge, labeling, metrics as mt
+from benchmark import calibration as cal, judge, labeling, metrics as mt
 
 ROWS = [
     ("auto_post_precision", "auto-post precision"),
@@ -68,21 +70,48 @@ def policy_block(title: str, runs, findings, auto_fn, param, B: int, seed: int) 
     for key, label in ROWS:
         e = s[key]
         n_txt = f"  (n={e['n_valid']} resamples)" if e["method"] == "bootstrap" and e["ci"] else ""
-        out.append(f"  {label:42s} {fmt_entry(e):20s} {e['method']}{n_txt}")
+        w = e.get("wilson")
+        w_txt = f" | Wilson [{w[0]:.2f}, {w[1]:.2f}]" if w else ""
+        flag = "  <- bootstrap collapsed, read the Wilson interval" if mt.degenerate(e.get("ci")) and w else ""
+        out.append(f"  {label:42s} {fmt_entry(e):20s} {e['method']}{n_txt}{w_txt}{flag}")
     return out
 
 
 def curve_block(kind: str, runs, findings, B: int, seed: int) -> list[str]:
     rows = mt.operating_curve(runs, findings, mt.POLICIES[kind], CURVE_PARAMS[kind], B, seed)
     name = "threshold" if kind == "score" else "scale"
-    out = [f"OPERATING CURVE ({kind}; 95% bootstrap bands over cases)",
+    out = [f"OPERATING CURVE ({kind}; 95% bootstrap bands over cases; w = bootstrap collapsed, Wilson shown)",
            f"  {name:9s} {'auto':>5s} {'esc':>4s}  {'auto-post precision':24s} {'escalation rate':20s} auto-post recall"]
     for r in rows:
         def cell(k):
-            ci = r[k + "_ci"]
+            ci, w = r[k + "_ci"], r[k + "_wilson"]
+            if ci and mt.degenerate(ci) and w:                    # collapsed bootstrap: show Wilson, mark with w
+                return f"{fmt(r[k])} [{w[0]:.2f}, {w[1]:.2f}]w"
             return f"{fmt(r[k])}" + (f" [{ci[0]:.2f}, {ci[1]:.2f}]" if ci else "")
         out.append(f"  {r['param']:<9} {r['n_auto']:>5d} {r['n_escalated']:>4d}  {cell('auto_post_precision'):24s} "
                    f"{cell('escalation_rate'):20s} {cell('autopost_recall')}")
+    return out
+
+
+def calibration_block(runs, findings, score_key: str, B: int, seed: int) -> list[str]:
+    s = cal.calibration_summary(runs, findings, B, seed)
+    if not s["n"]:
+        return [f"CALIBRATION of {score_key}: no finding has a score"]
+
+    def ci(key):
+        c = s["ci"][key]
+        return f" [{c[0]:.2f}, {c[1]:.2f}]" if c else ""
+
+    out = [f"CALIBRATION of {score_key} (all {s['n']} scored findings, positive and negative runs; "
+           "label = true positive; 95% bootstrap over cases)",
+           f"  base rate of true positives  {fmt(s['base_rate'])}",
+           f"  Brier score                  {fmt(s['brier'])}{ci('brier')}   base-rate predictor {fmt(s['brier_reference'])}",
+           f"  Brier skill score            {fmt(s['brier_skill'])}{ci('brier_skill')}   (0 = no better than the base rate)",
+           f"  ECE (<=5 equal-mass bins)    {fmt(s['ece'])}{ci('ece')}",
+           f"  AUROC (TP above FP)          {fmt(s['auroc'])}{ci('auroc')}   (0.5 = chance)",
+           "  reliability:   score range      n   mean score   observed TP rate"]
+    for b in s["bins"]:
+        out.append(f"                 {b['lo']:.2f} - {b['hi']:.2f}  {b['n']:4d}   {b['mean_score']:10.2f}   {b['rate']:15.2f}")
     return out
 
 
@@ -103,7 +132,8 @@ def spread_block(runs, findings, auto_fn, param) -> list[str]:
 
 
 def render_report(runs, findings, skipped, policy: str = "all_auto", param=None, curve: bool = False,
-                  B: int = 2000, seed: int = 0, header: str = "") -> str:
+                  B: int = 2000, seed: int = 0, header: str = "", calibration: bool = False,
+                  score_key: str = "self_confidence") -> str:
     reasons = Counter(f.reason for f in findings)
     tp = sum(1 for f in findings if f.is_tp)
     lines = [header] if header else []
@@ -115,13 +145,17 @@ def render_report(runs, findings, skipped, policy: str = "all_auto", param=None,
     lines += policy_block("NO GATE (everything auto-posted)", runs, findings, mt.all_auto, None, B, seed)
     if policy != "all_auto":
         lines.append("")
-        label = {"score": f"SELF-CONFIDENCE BASELINE (auto-post when score >= {param})",
+        label = {"score": f"SCORE THRESHOLD BASELINE (auto-post when score >= {param})",
+                 "always_escalate": "ALWAYS ESCALATE (a human reviews everything)",
                  "severity_scaled": f"SEVERITY THRESHOLDS x {param}",
                  "decisions": "GATE DECISIONS (as recorded on each finding)"}[policy]
         lines += policy_block(label, runs, findings, policy_fn(policy), param, B, seed)
     if curve:
         lines.append("")
         lines += curve_block(policy if policy in CURVE_PARAMS else "score", runs, findings, B, seed)
+    if calibration:
+        lines.append("")
+        lines += calibration_block(runs, findings, score_key, B, seed)
     sp = spread_block(runs, findings, policy_fn(policy) if policy != "all_auto" else mt.all_auto, param)
     if sp:
         lines.append("")
@@ -134,10 +168,11 @@ def main(argv: list[str]) -> None:
     ap.add_argument("runs", type=Path)
     ap.add_argument("--labels", type=Path, default=judge.LABELS_PATH)
     ap.add_argument("--split", default="dev")
-    ap.add_argument("--policy", default="all_auto", choices=["all_auto", "score", "severity_scaled", "decisions"])
+    ap.add_argument("--policy", default="all_auto", choices=["all_auto", "always_escalate", "score", "severity_scaled", "decisions"])
     ap.add_argument("--param", type=float, default=None, help="threshold (score) or scale (severity_scaled)")
     ap.add_argument("--score-key", default="self_confidence", help="finding field the score policy compares")
     ap.add_argument("--curve", action="store_true")
+    ap.add_argument("--calibration", action="store_true", help="Brier, ECE, AUROC and reliability of --score-key")
     ap.add_argument("--boot", type=int, default=2000)
     ap.add_argument("--seed", type=int, default=0)
     a = ap.parse_args(argv)
@@ -154,7 +189,8 @@ def main(argv: list[str]) -> None:
         sys.exit(f"{len(wait)} finding(s) are still waiting for the judge (e.g. {wait[0].id}). Run:\n"
                  f"  python -m benchmark.judge {a.runs}")
     print(render_report(runs, findings, skipped, a.policy, a.param, a.curve, a.boot, a.seed,
-                        header=f"{a.runs}  split {a.split}  judge prompt {judge.JUDGE_PROMPT_VERSION}"))
+                        header=f"{a.runs}  split {a.split}  judge prompt {judge.JUDGE_PROMPT_VERSION}",
+                        calibration=a.calibration, score_key=a.score_key))
 
 
 if __name__ == "__main__":

@@ -89,3 +89,36 @@ escalation, and count once toward run-level recall.
   reason, not from hit counts. On the 12 pilot findings judged under both prompts, 1 verdict(s) changed (tornado-4:positive:s0:f2);
   the rest were identical. j1 verdicts stay in labels.jsonl and are ignored. j2 is frozen for dev-set
   judging; agreement with hand labels is the validation.
+
+
+
+## Baselines and calibration (added 2026-11-22, before any dev-set run)
+Baselines, each scored with the same labels and intervals as the system:
+- No gate: every finding is auto-posted (the reviewer alone).
+- Always escalate: a human reviews everything and nothing is auto-posted; the reference for escalation cost.
+- Reviewer self-confidence: auto-post when the reviewer's own self_confidence is at or above a threshold;
+  the full threshold sweep is reported as an operating curve. This is the baseline the gate must beat; treat
+  it as a real opponent, not a strawman.
+- Critic only: auto-post when the critic's confidence is at or above a threshold (once the critic node exists,
+  Phase 4).
+- Token log-probabilities: only for a provider that returns them; none is planned, so this baseline is dropped
+  unless one is found.
+Thresholds behind any headline number are not tuned on the data they are reported on (grouped cross-validation
+by bug, Phase 5); curves show every threshold.
+
+Calibration and ranking of a confidence score (self-confidence, critic confidence, gate confidence before and
+after the calibrator), over all scored findings, positive and negative runs, with label = true positive as
+defined above:
+- Brier score, with the base-rate predictor (always predict the overall true-positive rate) as reference and
+  the skill score 1 - Brier/reference.
+- Expected calibration error over up to 5 equal-mass bins, identical scores never split across bins (scores
+  cluster on a few values), with the reliability table (bin range, count, mean score, observed true-positive
+  rate).
+- AUROC: the probability that a random true positive scores above a random false positive, ties counting half.
+  It isolates ranking quality, which a threshold gate depends on, from calibration, which Brier and ECE also mix in.
+Intervals: cluster bootstrap over cases (B = 2000, fixed seed), as for the other run-level metrics.
+
+Interval clarification: a percentile bootstrap collapses to a single point when every case succeeds or fails,
+which is not certainty. Run-level proportions (detection recall, auto-post recall, fix-flag rate) are therefore
+also reported with a Wilson interval (valid with one repeat per case), and the operating curve shows the Wilson
+interval wherever its bootstrap band has zero width.

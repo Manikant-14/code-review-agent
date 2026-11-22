@@ -73,7 +73,7 @@ def test_pending_judge_blocks_the_report(tmp_path, capsys):
 
 def test_score_policy_block_and_curve(tmp_path, capsys):
     out = run_main(tmp_path, capsys, extra=["--policy", "score", "--param", "0.85", "--curve"])
-    assert "SELF-CONFIDENCE BASELINE (auto-post when score >= 0.85)" in out
+    assert "SCORE THRESHOLD BASELINE (auto-post when score >= 0.85)" in out
     # the 0.5-confidence false positive is escalated: auto-posted 2 of 3 findings
     assert "auto-posted 2, escalated 1" in out
     assert "OPERATING CURVE (score" in out and "1.0" in out
