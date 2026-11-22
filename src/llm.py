@@ -8,6 +8,7 @@ import hashlib
 import json
 import os
 import re
+import threading
 import time
 from pathlib import Path
 from types import SimpleNamespace
@@ -154,12 +155,23 @@ def _gemini_call(model, temperature, system, prompt, schema):
     )
 
 
+_throttle_lock = threading.Lock()
+_log_lock = threading.Lock()
+
+
 def _throttle(model: str) -> None:
+    """Reserve this model's next request slot, then wait for it.
+
+    Safe to call from several threads: each caller gets its own slot, at least one gap after the
+    previous one, so parallel workers cannot burst past the rate limit.
+    """
     gap = 60.0 / RPM_LIMITS.get(model, DEFAULT_RPM) * 1.05
-    wait = _last_call.get(model, 0.0) + gap - time.time()
+    with _throttle_lock:
+        slot = max(time.time(), _last_call.get(model, 0.0) + gap)
+        _last_call[model] = slot
+    wait = slot - time.time()
     if wait > 0:
         time.sleep(wait)
-    _last_call[model] = time.time()
 
 
 _NETWORK_ERRORS = {"ConnectError", "ReadError", "WriteError", "ReadTimeout", "ConnectTimeout",
@@ -200,7 +212,7 @@ def _log(role, model, key, cached, usage, latency) -> None:
     LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
     row = {"ts": time.time(), "role": role, "model": model, "key": key[:12],
            "cached": cached, "latency_s": round(latency, 3), **(usage or {})}
-    with LOG_PATH.open("a", encoding="utf-8", newline="\n") as f:
+    with _log_lock, LOG_PATH.open("a", encoding="utf-8", newline="\n") as f:
         f.write(json.dumps(row) + "\n")
 
 
