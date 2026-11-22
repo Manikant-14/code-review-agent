@@ -136,5 +136,10 @@ def test_daily_quota_stops_new_work_and_writes_nothing_for_it(tmp_path):
 def test_verdicts_of_another_prompt_version_are_ignored(tmp_path):
     out = tmp_path / "labels.jsonl"
     jd.run_judge([item()], out, judge_fn=fake_judge)
-    assert jd.load_verdicts(out, "j1") == {"c1:positive:s0:f0": "yes"}
-    assert jd.load_verdicts(out, "j2") == {}
+    assert jd.load_verdicts(out, jd.JUDGE_PROMPT_VERSION) == {"c1:positive:s0:f0": "yes"}
+    assert jd.load_verdicts(out, "some-other-version") == {}
+
+
+def test_prompt_tells_the_judge_the_reviewer_saw_the_change_reversed():
+    assert "opposite direction" in jd.SYSTEM and "direction of the wording" in jd.SYSTEM
+    assert jd.JUDGE_PROMPT_VERSION != "j1"          # j1 lacked this note; its verdicts must not be reused

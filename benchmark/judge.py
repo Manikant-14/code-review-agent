@@ -31,18 +31,21 @@ from src import config, llm
 
 ROOT = Path(__file__).resolve().parent.parent
 LABELS_PATH = ROOT / "data" / "runs" / "labels.jsonl"
-JUDGE_PROMPT_VERSION = "j1"
+JUDGE_PROMPT_VERSION = "j2"
 
 SYSTEM = (
     "You are a strict evaluator of automated code review findings. You are given (1) a patch that "
     "fixes a bug, shown as a unified diff from the buggy version (lines starting with '-') to the "
-    "fixed version (lines starting with '+'), and (2) one finding written by an automated reviewer "
-    "about the buggy version. Decide whether the finding describes the defect that this patch "
-    "fixes: the same underlying problem, in the same place, with a consistent explanation of why "
-    "it is wrong. Answer \"no\" if the finding is about a different problem, is vague or generic, "
-    "only says that the code changed, or complains about something the patch does not address. A "
-    "finding that identifies the right defect but guesses a slightly different symptom still "
-    "counts as \"yes\". Reply with only a JSON object like "
+    "fixed version (lines starting with '+'), and (2) one finding written by an automated reviewer. "
+    "The reviewer saw the same change in the opposite direction, from the fixed version to the "
+    "buggy one, so its wording may say that code was \"removed\" or \"changed\" where this patch "
+    "adds or restores it: judge the underlying defect, not the direction of the wording. Decide "
+    "whether the finding describes the defect that this patch fixes: the same underlying problem, "
+    "in the same place, with a consistent explanation of why it is wrong. Answer \"no\" if the "
+    "finding is about a different problem, is vague or generic, only says that the code changed, "
+    "or complains about something the patch does not address. A finding that identifies the right "
+    "defect but guesses a slightly different symptom still counts as \"yes\". Reply with only a "
+    "JSON object like "
     '{"verdict": "yes", "reason": "one sentence"}'
 )
 
