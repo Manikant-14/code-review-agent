@@ -1,20 +1,13 @@
 """Quick look at a reviewer JSONL (step 5 pilot). Location-only: the real harness is step 6.
 
-Known gap (STATUS finding 2): thefuck-10, thefuck-24, thefuck-28 and httpie-5 have incomplete
-ground-truth locations, so their misses may be scorer misses. Marked with * below.
-
 Usage: python -m benchmark.pilot_summary [data/runs/pilot.jsonl]
 """
 import json
 import statistics
 import sys
 from pathlib import Path
-from types import SimpleNamespace
 
-from benchmark.bakeoff import CASES_DIR, is_hit
-from src import config
-
-GAP_CASES = {"thefuck-10", "thefuck-24", "thefuck-28", "httpie-5"}
+from benchmark.labeling import CASES_DIR, location_match
 
 
 def load_latest(path: Path) -> dict:
@@ -39,7 +32,7 @@ def summarise(latest: dict, cases_dir: Path = CASES_DIR) -> dict:
         fs = rec["findings"]
         if kind == "positive":
             locs = json.loads((cases_dir / cid / "meta.json").read_text(encoding="utf-8"))["bug_locations"]
-            hits = [f for f in fs if is_hit(SimpleNamespace(**f), locs, config.LOCATION_MATCH_WINDOW)]
+            hits = [f for f in fs if location_match(f["file"], f["line"], locs)]
             row["pos"] = (bool(hits), len(fs))
             out["hit_conf"] += [f["self_confidence"] for f in hits]
             out["other_conf"] += [f["self_confidence"] for f in fs if f not in hits]
@@ -59,9 +52,9 @@ def main(argv: list[str]) -> None:
     for cid, r in s["cases"].items():
         p = "-" if "pos" not in r else f"{'HIT ' if r['pos'][0] else 'miss'} ({r['pos'][1]} findings)"
         n = "-" if "neg" not in r else ("quiet" if r["neg"] == 0 else f"{r['neg']} finding(s) on the fix")
-        print(f"{cid + ('*' if cid in GAP_CASES else ''):12s} {p:22s} {n}")
+        print(f"{cid:12s} {p:22s} {n}")
     print(f"\nlocation recall   {sum(h for h, _ in pos)}/{len(pos)} positive runs"
-          f"   (* = ground-truth gap, may be a scorer miss)")
+          "   (location only: not correctness)")
     print(f"fix-flag rate     {sum(1 for n in neg if n)}/{len(neg)} negative runs had a finding")
     if pos:
         print(f"findings per run  positive {statistics.mean(n for _, n in pos):.2f}"
