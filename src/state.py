@@ -30,6 +30,7 @@ class Finding(BaseModel):
     # --- logged, not scored ---
     critic_confidence: Optional[float] = Field(default=None, ge=0, le=1)
     critic_rebuttal: Optional[str] = None
+    self_confidence: Optional[float] = Field(default=None, ge=0, le=1)  # reviewer's own estimate; baseline feature only
     repro_code: Optional[str] = None
     sandbox_log: Optional[str] = None
 
