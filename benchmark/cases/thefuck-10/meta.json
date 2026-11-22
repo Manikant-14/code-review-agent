@@ -16,6 +16,18 @@
       "start": 21,
       "end": 24,
       "anchor_only": false
+    },
+    {
+      "file": "thefuck/rules/man.py",
+      "start": 14,
+      "end": 14,
+      "anchor_only": true
+    },
+    {
+      "file": "thefuck/rules/man.py",
+      "start": 26,
+      "end": 26,
+      "anchor_only": true
     }
   ],
   "patch_stats": {

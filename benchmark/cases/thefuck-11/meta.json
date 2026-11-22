@@ -16,6 +16,12 @@
       "start": 14,
       "end": 14,
       "anchor_only": false
+    },
+    {
+      "file": "thefuck/rules/git_push.py",
+      "start": 12,
+      "end": 12,
+      "anchor_only": true
     }
   ],
   "patch_stats": {

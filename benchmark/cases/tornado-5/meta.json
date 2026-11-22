@@ -16,6 +16,18 @@
       "start": 1221,
       "end": 1221,
       "anchor_only": false
+    },
+    {
+      "file": "tornado/ioloop.py",
+      "start": 1219,
+      "end": 1219,
+      "anchor_only": true
+    },
+    {
+      "file": "tornado/ioloop.py",
+      "start": 1223,
+      "end": 1223,
+      "anchor_only": true
     }
   ],
   "patch_stats": {

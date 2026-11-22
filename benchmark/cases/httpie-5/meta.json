@@ -16,6 +16,18 @@
       "start": 43,
       "end": 46,
       "anchor_only": false
+    },
+    {
+      "file": "httpie/cli.py",
+      "start": 38,
+      "end": 38,
+      "anchor_only": true
+    },
+    {
+      "file": "httpie/cli.py",
+      "start": 41,
+      "end": 41,
+      "anchor_only": true
     }
   ],
   "patch_stats": {

@@ -84,6 +84,49 @@ def hunk_location(path, hunk):
     return None
 
 
+def hunk_locations(path, hunk):
+    """All buggy-side locations of one hunk of a buggy->fixed diff.
+
+    hunk_location() covers the removed lines. A hunk can also hold change groups that only ADD
+    lines (code the buggy version is missing, e.g. a missing check) separated from the removals by
+    context; those have no buggy lines and used to be dropped. Each such group now adds an anchor
+    location (the line after which the code is missing), unless it lies inside the removed range or
+    only adds comments/blank lines.
+    """
+    main = hunk_location(path, hunk)
+    if main is None:
+        return []
+    locs = [main]
+    old = hunk["old_start"] if hunk["old_count"] > 0 else hunk["old_start"] + 1
+    groups, cur = [], None
+    for ln in hunk["lines"]:
+        if ln.startswith("\\"):
+            continue
+        if ln.startswith("-") or ln.startswith("+"):
+            if cur is None:
+                cur = {"anchor": old - 1, "added": [], "removed": False}
+            if ln.startswith("-"):
+                cur["removed"] = True
+                old += 1
+            else:
+                cur["added"].append(ln[1:].strip())
+        else:
+            if cur is not None:
+                groups.append(cur)
+                cur = None
+            old += 1
+    if cur is not None:
+        groups.append(cur)
+    for g in groups:
+        if g["removed"] or all(a == "" or a.startswith("#") for a in g["added"]):
+            continue
+        loc = {"file": path, "start": g["anchor"], "end": g["anchor"], "anchor_only": True}
+        inside = not main["anchor_only"] and main["start"] <= loc["start"] <= main["end"]
+        if not inside and loc not in locs:
+            locs.append(loc)
+    return locs
+
+
 def signature(files):
     """Per file: (sorted removed old-line numbers, number of added lines). Used to check
     our git diff against BugsInPy's own bug_patch.txt."""
@@ -148,9 +191,7 @@ def build(res):
     locations = []
     for f in parse_patch(negative):
         for h in f["hunks"]:
-            loc = hunk_location(f["path"], h)
-            if loc:
-                locations.append(loc)
+            locations.extend(hunk_locations(f["path"], h))
 
     if not locations:
         return None, "no code location (only comment/whitespace changes)"

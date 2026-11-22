@@ -25,9 +25,21 @@
     },
     {
       "file": "thefuck/rules/fix_file.py",
+      "start": 29,
+      "end": 29,
+      "anchor_only": true
+    },
+    {
+      "file": "thefuck/rules/fix_file.py",
       "start": 63,
       "end": 66,
       "anchor_only": false
+    },
+    {
+      "file": "thefuck/rules/fix_file.py",
+      "start": 58,
+      "end": 58,
+      "anchor_only": true
     }
   ],
   "patch_stats": {

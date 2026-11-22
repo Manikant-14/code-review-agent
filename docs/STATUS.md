@@ -193,3 +193,13 @@ Numbers: a context call is ~1.2K prompt + ~0.7K output tokens; use 2 RPM for the
 Still open: fix-flagging on negative diffs (decide at step 6), build_cases ground-truth gap (fix before step 6).
 Next: step 4, reviewer node (schema file, line, category, severity, message, expected_failure, self_confidence),
 temperature 0.2, findings saved as JSONL.
+
+## UPDATE 2026-11-22 (Phase 3 steps 4-5, ground truth)
+Steps 4-5 done. Reviewer node src/reviewer.py (c577312): one JSONL line per run in data/runs/, resumable, prompt v1,
+Finding.self_confidence added. Pilot (10 bugs, 20 runs, data/runs/pilot.jsonl): no errors, location recall 10/10
+(weak signal: the bug is the diff), fix-flag 4/10 negative runs, self_confidence hits 0.89 vs other findings 0.85.
+Ground-truth gap FIXED: build_cases.hunk_locations adds anchors for pure-insertion groups in mixed hunks;
+benchmark/refresh_locations.py regenerates bug_locations from negative.diff (7 cases changed: httpie-5, thefuck-10,
+thefuck-11, thefuck-13, thefuck-24, thefuck-28, tornado-5); a test keeps meta.json in sync. Logged in evaluation.md.
+Next: step 6, eval harness per docs/evaluation.md (location matcher, judge only on location-matched findings, metrics,
+intervals, unit tests). Decide the fix-flag reporting there.

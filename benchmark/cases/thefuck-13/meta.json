@@ -22,6 +22,12 @@
       "start": 19,
       "end": 19,
       "anchor_only": true
+    },
+    {
+      "file": "thefuck/rules/git_branch_exists.py",
+      "start": 20,
+      "end": 20,
+      "anchor_only": true
     }
   ],
   "patch_stats": {

@@ -19,6 +19,12 @@
     },
     {
       "file": "thefuck/types.py",
+      "start": 12,
+      "end": 12,
+      "anchor_only": true
+    },
+    {
+      "file": "thefuck/types.py",
       "start": 57,
       "end": 69,
       "anchor_only": false

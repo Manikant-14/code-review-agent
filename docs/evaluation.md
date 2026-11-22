@@ -73,3 +73,12 @@ escalation, and count once toward run-level recall.
   location-only: found 5/5 with context vs 3/5 without (4/5 after the known thefuck-10 ground-truth gap),
   extra findings 0 vs 1, quiet on fixes 3/5 vs 2/5. n = 5, so this is a screen, not a ranking; the
   with/without comparison should be repeated on the pilot with the judge in place.
+
+- 2026-11-22 (Phase 3 step 5b, ground truth): bug_locations now include one anchor location for each
+  pure-insertion change group inside a mixed hunk (code the buggy version is missing) that lies outside
+  the removed range and is not comment-only. Before, such insertions were dropped, so a reviewer pointing
+  at a missing check could be scored as a miss. Seven cases changed: httpie-5, thefuck-10, thefuck-11,
+  thefuck-13, thefuck-24, thefuck-28, tornado-5. A fix to the ground truth made before any scoring run;
+  location matching is only a pre-filter before the judge, so the extra anchors cannot make a wrong finding
+  count as correct. benchmark/refresh_locations.py regenerates locations from negative.diff and a test keeps
+  meta.json in sync.
