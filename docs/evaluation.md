@@ -82,3 +82,10 @@ escalation, and count once toward run-level recall.
   location matching is only a pre-filter before the judge, so the extra anchors cannot make a wrong finding
   count as correct. benchmark/refresh_locations.py regenerates locations from negative.diff and a test keeps
   meta.json in sync.
+- 2026-11-22 (Phase 3 step 6b, judge): judge prompt j1 -> j2. j1 answered no to a finding whose wording was
+  reversed relative to the patch: the reviewer sees the fixed->buggy diff, so it says "removed" where the
+  patch adds code (pilot case tornado-4 f2). j2 adds one sentence telling the judge about the reversal; the
+  yes/no rule is unchanged. The change was made after the pilot judge run, from the judge's own stated
+  reason, not from hit counts. On the 12 pilot findings judged under both prompts, 1 verdict(s) changed (tornado-4:positive:s0:f2);
+  the rest were identical. j1 verdicts stay in labels.jsonl and are ignored. j2 is frozen for dev-set
+  judging; agreement with hand labels is the validation.
