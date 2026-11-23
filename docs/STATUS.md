@@ -242,3 +242,8 @@ Open
 Next: Phase 4, one node at a time on the pilot: 1 static (ruff on the full file, changed lines only);
 2 sandbox (decide the per-project Docker image strategy first); 3 critic (different model family, binary verdict);
 4 wire gate.py into LangGraph and persist every signal for offline replay.
+Pilot calibration of self_confidence (18 findings, wide intervals): Brier 0.26 vs base-rate predictor 0.22
+(skill -0.16 [-0.48, 0.02]); ECE 0.23 [0.08, 0.41]; AUROC 0.65 [0.40, 0.85]. Reliability: scores 0.80-0.85 (n=10)
+were right 50% of the time, 0.88-0.92 (n=5) 80%, 0.93-0.95 (n=3) 100%. Reading: overconfident, and the pilot cannot
+yet say whether self-confidence ranks better than chance (the AUROC interval includes 0.5). The earlier wording
+"the self-confidence baseline is a real opponent" is a hypothesis for the dev run, not a finding.
