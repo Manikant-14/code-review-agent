@@ -256,4 +256,9 @@ laptop: ruff 0.17.2 and Docker 29.9.2 both run, so the pyflakes fallback was not
 in evaluation.md ("Static analysis"); rule-set ablation planned for Phase 5.
 Replay and persist for offline gate replay:
   python -m src.static_analysis data\runs\pilot.jsonl --out data\signals\static.jsonl
+Pilot replay (20 runs, 18 findings): 18 of 20 runs had added .py lines and were linted; the other 2 are
+pure-deletion positives (tornado-10, httpie-3). Full-file F,E9 issues = 0 in every linted file, so static_overlap is
+unavailable for all 18 findings. Exploratory counts on changed lines: ruff default rules 2 (thefuck-32, once in the
+positive and once in the negative run), F,E9,B 0. The rule set is unchanged. Consequence: on this benchmark only
+sandbox_verified > 0 can unlock an auto-post (gate rule no_non_llm_support), so step 2 sets auto-post recall.
 Next: Phase 4 step 2, sandbox node (decide the per-project Docker image strategy first).
