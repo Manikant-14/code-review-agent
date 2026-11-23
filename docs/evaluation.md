@@ -122,3 +122,16 @@ Interval clarification: a percentile bootstrap collapses to a single point when 
 which is not certainty. Run-level proportions (detection recall, auto-post recall, fix-flag rate) are therefore
 also reported with a Wilson interval (valid with one repeat per case), and the operating curve shows the Wilson
 interval wherever its bootstrap band has zero width.
+
+## Static analysis (added 2026-11-23, before any dev-set run)
+- Engine and rules: `python -m ruff check --isolated --select F,E9` (pyflakes-class correctness rules plus
+  syntax/IO errors). `--isolated` ignores the benchmark project's own ruff config, so results do not depend on it.
+  Style and convention rules (E4, E7, W, C90 ...) are excluded on purpose: static_overlap is a non-LLM signal that
+  can unlock an auto-post, so a style hit near an unrelated finding must not count as corroboration.
+- Input: the full new-version file at the commit the reviewer saw (buggy commit for positive runs, fixed commit
+  for negative runs). An issue is kept only if its row span touches a line the diff added.
+- Overlap: a finding gets static_overlap = 1.0 if a kept issue in the same file has a row span intersecting
+  [line - 3, line + 3]; otherwise the signal is unavailable (never 0.0). Non-Python files, and files that cannot be
+  read or linted (ruff blocked, timeout), are unavailable and logged in the run's errors.
+- The ruff version is stored in every signal record (data/signals/static.jsonl). A rule-set ablation (ruff default
+  rules; F+E9+B) is planned for Phase 5 and is reported next to the headline numbers.

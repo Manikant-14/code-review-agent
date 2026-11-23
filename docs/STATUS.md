@@ -247,3 +247,13 @@ Pilot calibration of self_confidence (18 findings, wide intervals): Brier 0.26 v
 were right 50% of the time, 0.88-0.92 (n=5) 80%, 0.93-0.95 (n=3) 100%. Reading: overconfident, and the pilot cannot
 yet say whether self-confidence ranks better than chance (the AUROC interval includes 0.5). The earlier wording
 "the self-confidence baseline is a real opponent" is a hypothesis for the dev run, not a finding.
+
+## UPDATE 2026-11-23 (Phase 4 step 1: static node)
+src/static_analysis.py: ruff via `python -m ruff` (--isolated --select F,E9) over the full new-version file on
+stdin; issues kept only if their row span touches an added line; static_overlap = 1.0 within +/-3 lines of a
+finding, else None. A ruff failure leaves the signal unavailable and is logged in state errors. Checked on this
+laptop: ruff 0.17.2 and Docker 29.9.2 both run, so the pyflakes fallback was not needed. Rule set pre-registered
+in evaluation.md ("Static analysis"); rule-set ablation planned for Phase 5.
+Replay and persist for offline gate replay:
+  python -m src.static_analysis data\runs\pilot.jsonl --out data\signals\static.jsonl
+Next: Phase 4 step 2, sandbox node (decide the per-project Docker image strategy first).

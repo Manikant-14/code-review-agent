@@ -40,6 +40,10 @@ HIGH_SEVERITY_CATEGORIES = frozenset({Category.SECURITY})
 
 # static_overlap: ruff must flag a line within +/- this many lines of the finding.
 STATIC_OVERLAP_LINE_WINDOW = 3
+# Rules ruff runs with (--isolated, so project config is ignored): pyflakes-class correctness rules plus
+# syntax/IO errors. Style rules are excluded on purpose, see docs/evaluation.md "Static analysis".
+STATIC_RULES = ("F", "E9")
+STATIC_RUFF_TIMEOUT_SECONDS = 30
 
 # Sandbox run limit before the result is marked unavailable.
 SANDBOX_TIMEOUT_SECONDS = 30
