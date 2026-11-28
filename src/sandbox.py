@@ -42,6 +42,12 @@ TOOLING = ("coverage==7.2.7", "pytest==7.4.4 (only if absent)")
 REPRO_FILE = "sandbox_repro_test.py"
 IMAGE_PREFIX = "crabench-env:"
 
+# Cases whose BugsInPy test cannot run offline. `check` reports them as SKIP instead of failing; the evidence is in
+# docs/evaluation.md ("Sandbox environment"). Repro runs stay offline regardless.
+NETWORK_GROUND_TRUTH = {
+    "httpie-4": "test calls socket.gethostbyname('httpbin.org') and talks to the real host",
+}
+
 BUILD_SCRIPT = r"""set -u
 : > /opt/pip-failed.log
 # One requirement per line so a single bad pin cannot abort the install (as BugsInPy and verify_repro do).
@@ -192,10 +198,12 @@ def ensure_image(spec: EnvSpec, docker: Optional[Callable] = None, log: Callable
 
 def extract_tree(repo: Path, commit: str, dest: Path, overlay_from: Optional[str] = None,
                  overlay_paths: tuple[str, ...] = ()) -> Path:
-    """Fresh copy of one commit via `git archive` (no autocrlf, no .git). Optionally copy some files from another commit."""
+    """Fresh copy of one commit via `git archive` (LF endings as stored, no .git). Optionally copy some files from another commit."""
     shutil.rmtree(dest, ignore_errors=True)
     dest.mkdir(parents=True)
-    r = subprocess.run(["git", "-C", str(repo), "archive", "--format=tar", commit], capture_output=True)
+    # git archive applies core.autocrlf: on Windows it would give the Linux container CRLF files, so force it off
+    r = subprocess.run(["git", "-C", str(repo), "-c", "core.autocrlf=false", "-c", "core.eol=lf",
+                        "archive", "--format=tar", commit], capture_output=True)
     if r.returncode != 0:
         raise SandboxError(f"git archive {commit[:8]} failed: {_text(r.stderr, 300)}")
     root = dest.resolve()
@@ -335,14 +343,22 @@ def check_case(case_id: str, docker: Optional[Callable] = None, log: Callable[[s
     self_ok = rs.status == "pass" and cov_lines > 0
     return {"case": case_id, "env": spec.key, "pip_failed": failed, "buggy": rb, "fixed": rf, "self": rs,
             "expected": (expected.get("buggy_rc"), expected.get("fixed_rc")), "env_ok": env_ok,
-            "rc_same": rc_same, "cov_lines": cov_lines, "self_ok": self_ok}
+            "rc_same": rc_same, "cov_lines": cov_lines, "self_ok": self_ok,
+            "network_note": NETWORK_GROUND_TRUTH.get(case_id)}
+
+
+def verdict_for(r: dict) -> str:
+    """OK, SKIP (ground-truth test needs the network, but the sandbox self-test passed) or CHECK."""
+    if r.get("network_note"):
+        return "SKIP" if r["self_ok"] else "CHECK"
+    return "OK" if (r["env_ok"] and r["rc_same"] and r["self_ok"]) else "CHECK"
 
 
 def main(argv: list[str]) -> int:
     if len(argv) < 2 or argv[0] != "check":
         print(__doc__)
         return 2
-    bad, seen_failed = 0, set()
+    bad, skipped, seen_failed = 0, 0, set()
     print(f"{'case':14s} {'env':12s} {'buggy rc (want)':>16s} {'fixed rc (want)':>16s} {'sec':>6s}  coverage/network self-test")
     for cid in argv[1:]:
         try:
@@ -357,16 +373,19 @@ def main(argv: list[str]) -> int:
                 print(f"  note: env {r['env']} could not install: {f}")
         sec = r["buggy"].seconds + r["fixed"].seconds + r["self"].seconds
         st = f"{r['self'].status}, bug-file lines executed={r['cov_lines']}"
-        verdict = "OK" if (r["env_ok"] and r["rc_same"] and r["self_ok"]) else "CHECK"
+        verdict = verdict_for(r)
         print(f"{cid:14s} {r['env']:12s} {str(r['buggy'].rc) + ' (' + str(r['expected'][0]) + ')':>16s} "
               f"{str(r['fixed'].rc) + ' (' + str(r['expected'][1]) + ')':>16s} {sec:6.1f}  {st}  {verdict}")
-        if verdict != "OK":
+        if verdict == "SKIP":
+            skipped += 1
+            print(f"    skipped ground truth: {r['network_note']} (environment validated online instead, see evaluation.md)")
+        if verdict == "CHECK":
             bad += 1
             if not r["self_ok"]:
                 print("    self-test output tail:\n" + "\n".join("      " + ln for ln in r["self"].output_tail.splitlines()[-12:]))
             if not r["env_ok"] or not r["rc_same"]:
                 print("    buggy output tail:\n" + "\n".join("      " + ln for ln in r["buggy"].output_tail.splitlines()[-8:]))
-    print(f"\n{len(argv) - 1 - bad} OK, {bad} need a look")
+    print(f"\n{len(argv) - 1 - bad - skipped} OK, {skipped} skipped (ground truth needs the network), {bad} need a look")
     return 1 if bad else 0
 
 

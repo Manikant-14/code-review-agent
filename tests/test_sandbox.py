@@ -310,3 +310,34 @@ def test_check_case_and_cli_end_to_end(tmp_path, monkeypatch, capsys):
     assert sb.main(["check", "demo-1"]) == 0
     assert "OK" in capsys.readouterr().out
     assert sb.main(["check", "demo-9"]) == 1     # unknown case: reported, not a crash
+
+# ---- regressions found by the first real run on Windows
+
+@pytest.mark.skipif(not HAS_GIT, reason="git not available")
+def test_extract_tree_ignores_core_autocrlf(tmp_path):
+    repo = tmp_path / "r"
+    repo.mkdir()
+
+    def git(*a):
+        return subprocess.run(["git", "-C", str(repo), "-c", "user.email=a@b", "-c", "user.name=a", *a],
+                              check=True, capture_output=True, text=True).stdout.strip()
+    git("init", "-q")
+    (repo / "f.txt").write_bytes(b"one\ntwo\n")
+    git("add", "."); git("commit", "-qm", "x")
+    git("config", "core.autocrlf", "true")   # the Windows default: a plain `git archive` would now emit CRLF
+    sb.extract_tree(repo, git("rev-parse", "HEAD"), tmp_path / "t")
+    assert (tmp_path / "t" / "f.txt").read_bytes() == b"one\ntwo\n"
+
+
+def test_verdict_for():
+    ok = {"env_ok": True, "rc_same": True, "self_ok": True, "network_note": None}
+    assert sb.verdict_for(ok) == "OK"
+    assert sb.verdict_for({**ok, "rc_same": False}) == "CHECK"
+    assert sb.verdict_for({**ok, "self_ok": False}) == "CHECK"
+    net = {"env_ok": False, "rc_same": False, "self_ok": True, "network_note": "needs the internet"}
+    assert sb.verdict_for(net) == "SKIP"                       # ground truth is unreachable offline, not a failure
+    assert sb.verdict_for({**net, "self_ok": False}) == "CHECK"  # but the sandbox itself must still work
+
+
+def test_httpie_4_is_the_documented_network_case():
+    assert "httpie-4" in sb.NETWORK_GROUND_TRUTH

@@ -136,7 +136,7 @@ interval wherever its bootstrap band has zero width.
 - The ruff version is stored in every signal record (data/signals/static.jsonl). A rule-set ablation (ruff default
   rules; F+E9+B) is planned for Phase 5 and is reported next to the headline numbers.
 
-## Sandbox environment (added 2026-11-23, before any dev-set run)
+## Sandbox environment (added 2026-11-28, before any dev-set run)
 - One image per distinct environment, not per project or per bug. Key = hash of the Python minor version, the bug's
   BugsInPy requirements.txt lines (comments, blanks and -e lines dropped) and the tooling pins. The 51 dev cases need
   6 distinct environments (httpie 2, thefuck 2, tornado 2). Images are built lazily, once each, with the network on.
@@ -150,3 +150,9 @@ interval wherever its bootstrap band has zero width.
   same buggy/fixed exit codes as benchmark/repro_results (that check uses a 120 s limit; the 30 s limit is for repros),
   and a coverage + network-off self-test must pass. BugsInPy tests are used only to validate the environment and are
   never shown to the reviewer or the repro generator.
+- Findings from the first real run (2026-11-28). (1) `git archive` applies core.autocrlf, so on Windows it produced CRLF
+  trees and tornado-4's fixed test failed on byte-exact file sizes; extraction now forces core.autocrlf=false and
+  core.eol=lf, as benchmark/verify_repro.py does. (2) httpie-4's ground-truth test calls
+  socket.gethostbyname('httpbin.org') and talks to the real host, so it cannot run offline: with the network off both
+  trees fail at that line, and with the network on the same image reproduces Phase 2 (buggy: assert 2 == 1, fixed:
+  passes). `check` reports it as SKIP (src/sandbox.py NETWORK_GROUND_TRUTH). Repro runs stay offline.
