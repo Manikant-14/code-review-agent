@@ -47,6 +47,10 @@ STATIC_RUFF_TIMEOUT_SECONDS = 30
 
 # Sandbox run limit before the result is marked unavailable.
 SANDBOX_TIMEOUT_SECONDS = 30
+# Container limits for every sandbox run (the network is always off). See docs/evaluation.md "Sandbox environment".
+SANDBOX_MEMORY = "512m"
+SANDBOX_CPUS = "1"
+SANDBOX_PIDS = 256
 
 assert abs(sum(SIGNAL_WEIGHTS.values()) - 1.0) < 1e-9, "weights must sum to 1"
 

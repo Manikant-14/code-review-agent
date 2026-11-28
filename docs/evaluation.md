@@ -135,3 +135,18 @@ interval wherever its bootstrap band has zero width.
   read or linted (ruff blocked, timeout), are unavailable and logged in the run's errors.
 - The ruff version is stored in every signal record (data/signals/static.jsonl). A rule-set ablation (ruff default
   rules; F+E9+B) is planned for Phase 5 and is reported next to the headline numbers.
+
+## Sandbox environment (added 2026-11-23, before any dev-set run)
+- One image per distinct environment, not per project or per bug. Key = hash of the Python minor version, the bug's
+  BugsInPy requirements.txt lines (comments, blanks and -e lines dropped) and the tooling pins. The 51 dev cases need
+  6 distinct environments (httpie 2, thefuck 2, tornado 2). Images are built lazily, once each, with the network on.
+- Build mirrors benchmark/verify_repro.py: requirements installed one line at a time (a failed pin is recorded in the
+  image and reported, it does not abort), markupsafe<2.1 when jinja2 is present, then coverage==7.2.7 and pytest 7.4.4
+  only if pytest is absent.
+- Run: a throwaway tree from `git archive` of the commit the reviewer saw, PYTHONPATH=/src (plus the BugsInPy
+  pythonpath), --network none, 512 MB, 1 CPU, 256 pids, hard kill at 30 s (config.SANDBOX_TIMEOUT_SECONDS). Timeouts,
+  setup errors and collection errors make the signal unavailable, never 0.0.
+- Fidelity check before any repro is generated: BugsInPy's own failing test, run through this sandbox, must give the
+  same buggy/fixed exit codes as benchmark/repro_results (that check uses a 120 s limit; the 30 s limit is for repros),
+  and a coverage + network-off self-test must pass. BugsInPy tests are used only to validate the environment and are
+  never shown to the reviewer or the repro generator.
